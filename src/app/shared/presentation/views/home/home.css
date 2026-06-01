@@ -1,0 +1,24 @@
+.home-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-card {
+  text-align: center;
+}
+
+.welcome-card h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.welcome-card p {
+  font-size: 1.2rem;
+  color: #666;
+}
+

@@ -1,0 +1,153 @@
+<div class="dashboard-container">
+  <div class="dashboard-main">
+    <div class="dashboard-header">
+      <div>
+        <h1 class="dashboard-title">{{ t('dashboard.greeting') }}</h1>
+        <h2 class="dashboard-subtitle">{{ currentUserName() }}</h2>
+      </div>
+      <div class="notifications-trigger-mobile">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="notificationsMenu"
+          class="notifications-button"
+          [attr.aria-label]="t('dashboard.notifications.button')">
+          <mat-icon [matBadge]="dashboardStore.notifications().length" matBadgeColor="warn" matBadgeSize="small" aria-hidden="false">{{ t('dashboard.notifications.icon') }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <mat-menu #notificationsMenu="matMenu" class="notifications-menu" xPosition="before">
+      <div class="notifications-dropdown" (click)="$event.stopPropagation()" role="menu" [attr.aria-label]="t('dashboard.notifications.title')">
+        <div class="notifications-header-mobile">
+          <h3 class="notifications-title">{{ t('dashboard.notifications.title') }}</h3>
+        </div>
+        <div class="notifications-list">
+          @for (notification of dashboardStore.notifications(); track notification.id; let i = $index) {
+            <div
+              [class]="'notification-item notification-' + notification.type"
+              [class.expanded]="expandedNotification === i"
+              (click)="toggleNotification(i)"
+              role="menuitem"
+              [attr.aria-label]="t('dashboard.notificationTitles.' + notification.title)"
+              tabindex="0"
+              (keydown.enter)="toggleNotification(i)"
+              (keydown.space)="toggleNotification(i)">
+              <mat-icon class="notification-icon" [attr.aria-label]="t('dashboard.notifications.types.' + notification.type)">
+                {{ notification.type === 'warning' ? 'warning' : 'error' }}
+              </mat-icon>
+              <div class="notification-content">
+                <div class="notification-text-title">{{ t('dashboard.notificationTitles.' + notification.title) }}</div>
+                <div class="notification-text" [class.expanded]="expandedNotification === i">
+                  {{ getNotificationMessage(notification) }}
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </mat-menu>
+
+    <div class="stats-grid" role="region" [attr.aria-label]="t('dashboard.stats.productsInInventory')">
+    <mat-card class="stat-card stat-card-dark" role="article" [attr.aria-label]="t('dashboard.stats.productsInInventory')">
+      <mat-card-content>
+        <div class="stat-label">{{ t('dashboard.stats.productsInInventory') }}</div>
+        <div class="stat-value" [attr.aria-label]="dashboardStore.stats()?.productsInInventory || 0">{{ dashboardStore.stats()?.productsInInventory || 0 }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card stat-card-green" role="article" [attr.aria-label]="t('dashboard.stats.monthlyIncome')">
+      <mat-card-content>
+        <div class="stat-label">{{ t('dashboard.stats.monthlyIncome') }}</div>
+        <div class="stat-value" [attr.aria-label]="'s/. ' + (dashboardStore.stats()?.monthlyIncome || 0)">s/. {{ dashboardStore.stats()?.monthlyIncome || 0 | number:'1.2-2' }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card stat-card-dark" role="article" [attr.aria-label]="t('dashboard.stats.salesThisMonth')">
+      <mat-card-content>
+        <div class="stat-label">{{ t('dashboard.stats.salesThisMonth') }}</div>
+        <div class="stat-value" [attr.aria-label]="dashboardStore.stats()?.salesThisMonth || 0">{{ dashboardStore.stats()?.salesThisMonth || 0 }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card stat-card-red" role="article" [attr.aria-label]="t('dashboard.stats.productsWithAlerts')">
+      <mat-card-content>
+        <div class="stat-label">{{ t('dashboard.stats.productsWithAlerts') }}</div>
+        <div class="stat-value" [attr.aria-label]="dashboardStore.stats()?.productsWithAlerts || 0">{{ dashboardStore.stats()?.productsWithAlerts || 0 }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="charts-grid">
+    <mat-card class="chart-card" role="article" [attr.aria-label]="t('dashboard.charts.topProducts')">
+      <mat-card-content>
+        <h3 class="chart-title">{{ t('dashboard.charts.topProducts') }}</h3>
+        <div class="chart-container doughnut-container" role="img" [attr.aria-label]="t('dashboard.charts.topProducts')">
+          <canvas
+            baseChart
+            [data]="doughnutChartData()"
+            [type]="doughnutChartType"
+            [options]="doughnutChartOptions"
+            [attr.aria-label]="t('dashboard.charts.topProducts')">
+          </canvas>
+        </div>
+        <div class="chart-legend" role="list" [attr.aria-label]="t('dashboard.charts.topProducts')">
+                @for (item of dashboardStore.productSales(); track item.productName; let i = $index) {
+                  <div class="legend-item" role="listitem">
+                    <span class="legend-color" [style.background-color]="getProductColor(item.productName, i)" [attr.aria-hidden]="true"></span>
+                    <span class="legend-label">{{ item.productName }}</span>
+                    <span class="legend-value" [attr.aria-label]="item.percentage + '%'">{{ item.percentage }}%</span>
+                  </div>
+                }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="chart-card" role="article" [attr.aria-label]="t('dashboard.charts.monthlyIncome')">
+      <mat-card-content>
+        <h3 class="chart-title">{{ t('dashboard.charts.monthlyIncome') }}</h3>
+        <div class="chart-container bar-container" role="img" [attr.aria-label]="t('dashboard.charts.monthlyIncome')">
+          <canvas
+            baseChart
+            [data]="barChartData()"
+            [type]="barChartType"
+            [options]="barChartOptions"
+            [attr.aria-label]="t('dashboard.charts.monthlyIncome')">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  </div>
+
+  <div class="dashboard-sidebar" role="complementary" [attr.aria-label]="t('dashboard.notifications.title')">
+    <div class="notifications-header">
+      <button mat-icon-button [attr.aria-label]="t('dashboard.notifications.title')">
+        <mat-icon [matBadge]="dashboardStore.notifications().length" matBadgeColor="warn" matBadgeSize="small" aria-hidden="false">{{ t('dashboard.notifications.icon') }}</mat-icon>
+      </button>
+      <span class="notifications-label">{{ t('dashboard.notifications.title') }}</span>
+    </div>
+    <div class="notifications-panel" role="list">
+      @for (notification of dashboardStore.notifications(); track notification.id; let i = $index) {
+        <div
+          [class]="'notification-item notification-' + notification.type"
+          [class.expanded]="expandedSidebarNotification === i"
+          (click)="toggleSidebarNotification(i)"
+          role="listitem"
+          [attr.aria-label]="t('dashboard.notificationTitles.' + notification.title)"
+          tabindex="0"
+          (keydown.enter)="toggleSidebarNotification(i)"
+          (keydown.space)="toggleSidebarNotification(i)">
+          <mat-icon class="notification-icon" [attr.aria-label]="t('dashboard.notifications.types.' + notification.type)">
+            {{ notification.type === 'warning' ? 'warning' : 'error' }}
+          </mat-icon>
+          <div class="notification-content">
+            <div class="notification-text-title">{{ t('dashboard.notificationTitles.' + notification.title) }}</div>
+            <div class="notification-text" [class.expanded]="expandedSidebarNotification === i">
+              {{ getNotificationMessage(notification) }}
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

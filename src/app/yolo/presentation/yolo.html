@@ -1,0 +1,230 @@
+<div class="yolo-page">
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">YOLO</span>
+      <h1>Asistente visual de inventario</h1>
+      <p>Conteo de productos, validación manual y afluencia de clientes mediante cámaras.</p>
+    </div>
+    <button mat-flat-button color="primary" class="new-camera-btn" (click)="addCamera()">
+      <mat-icon>add</mat-icon>
+      Nueva Cámara
+    </button>
+  </div>
+
+  <div class="summary-grid">
+    <mat-card class="summary-card orange">
+      <span>Aforo Actual</span>
+      <strong>{{ currentPeopleInside() }}</strong>
+      <small>/ 60 pax</small>
+      <div class="progress"><i [style.width.%]="capacityPercent()"></i></div>
+    </mat-card>
+
+    <mat-card class="summary-card green">
+      <span>Total Visitas Hoy</span>
+      <strong>{{ todayVisits() | number }}</strong>
+      <small>+12% vs ayer</small>
+      <mat-icon>trending_up</mat-icon>
+    </mat-card>
+
+    <mat-card class="summary-card red">
+      <span>Alerta de Capacidad</span>
+      <strong>{{ capacityStatus() }}</strong>
+      <small>Próximo pico estimado: 18:30</small>
+      <mat-icon>warning_amber</mat-icon>
+    </mat-card>
+  </div>
+
+  <div class="content-grid">
+    <section class="left-column">
+      <mat-card class="camera-card">
+        <div class="card-title dark">
+          <span>CÁMARAS CONECTADAS</span>
+          <b>{{ onlineCameras() }} ACTIVAS</b>
+        </div>
+
+        <table mat-table [dataSource]="cameras()" class="camera-table">
+          <ng-container matColumnDef="device">
+            <th mat-header-cell *matHeaderCellDef>DISPOSITIVO</th>
+            <td mat-cell *matCellDef="let camera">
+              <div class="device-cell">
+                <span class="device-icon" [class.offline]="camera.status === 'Offline'"><mat-icon>videocam</mat-icon></span>
+                <div>
+                  <strong>{{ camera.name }}</strong>
+                  <small>{{ camera.streamUrl }} · {{ camera.fps }} fps</small>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>ESTADO</th>
+            <td mat-cell *matCellDef="let camera">
+              <span class="status" [class.online]="camera.status === 'Online'" [class.offline]="camera.status === 'Offline'">
+                {{ camera.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="location">
+            <th mat-header-cell *matHeaderCellDef>UBICACIÓN</th>
+            <td mat-cell *matCellDef="let camera">{{ camera.location }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>ACCIONES</th>
+            <td mat-cell *matCellDef="let camera">
+              @if (camera.status === 'Online') {
+                <button mat-stroked-button class="mini-action" (click)="testConnection(camera)">Probar Conexión</button>
+              } @else {
+                <button mat-stroked-button class="mini-action" (click)="restartCamera(camera)">Reiniciar</button>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="cameraColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: cameraColumns;" [class.selected-row]="row.id === selectedCameraId" (click)="selectedCameraId = row.id"></tr>
+        </table>
+
+        <div class="new-camera-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput [(ngModel)]="newCameraName" placeholder="Cámara góndola 2">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Ubicación</mat-label>
+            <input matInput [(ngModel)]="newCameraLocation" placeholder="Pasillo bebidas">
+          </mat-form-field>
+        </div>
+      </mat-card>
+
+      <mat-card class="validation-card">
+        <h2>Validación del conteo YOLO</h2>
+        <p>La IA propone cantidades, pero el usuario valida antes de actualizar el inventario.</p>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Cámara</mat-label>
+            <mat-select [(ngModel)]="selectedCameraId">
+              @for (camera of cameras(); track camera.id) {
+                <mat-option [value]="camera.id">{{ camera.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Producto principal</mat-label>
+            <mat-select [(ngModel)]="selectedProductId">
+              @for (product of products(); track product.id) {
+                <mat-option [value]="product.id">{{ product.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="quantity-field">
+            <mat-label>Cantidad</mat-label>
+            <input matInput type="number" min="1" [(ngModel)]="validatedQuantity">
+          </mat-form-field>
+        </div>
+
+        <div class="actions-row">
+          <label class="upload-btn">
+            <input type="file" accept="image/*" (change)="onImageSelected($event)">
+            <mat-icon>upload</mat-icon>
+            Cargar imagen
+          </label>
+          <button mat-stroked-button (click)="runYoloAssistant()"><mat-icon>center_focus_strong</mat-icon>Simular detección</button>
+          <button mat-flat-button color="primary" [disabled]="!lastAudit" (click)="saveAuditDraft()"><mat-icon>save</mat-icon>Guardar pendiente</button>
+          <button mat-flat-button color="accent" [disabled]="!lastAudit" (click)="validateAudit()"><mat-icon>verified</mat-icon>Validar y actualizar stock</button>
+        </div>
+
+        @if (lastAudit) {
+          <div class="detections-list">
+            @for (detection of lastAudit.detections; track detection.id) {
+              <div class="detection-item">
+                <div>
+                  <strong>{{ detection.productName }}</strong>
+                  <span>{{ detection.confidence * 100 | number:'1.0-0' }}% confianza</span>
+                </div>
+                <input type="number" min="0" [ngModel]="detection.quantity" (ngModelChange)="updateDetectionQuantity(detection, $event)">
+              </div>
+            }
+          </div>
+        }
+      </mat-card>
+    </section>
+
+    <section class="right-column">
+      <mat-card class="video-card">
+        <div class="video-header">
+          <span class="live-dot"></span>
+          <strong>{{ selectedCamera()?.name || 'CAM_04_MAIN_ENTRANCE' }}</strong>
+        </div>
+        <div class="video-frame">
+          @if (imagePreview) {
+            <img [src]="imagePreview" alt="Imagen analizada por YOLO">
+          } @else {
+            <div class="fake-scene">
+              <div class="shelf shelf-one"></div>
+              <div class="shelf shelf-two"></div>
+              <div class="person person-left"></div>
+              <div class="person person-right"></div>
+            </div>
+          }
+
+          @if (lastAudit) {
+            @for (detection of lastAudit.detections; track detection.id) {
+              <div class="box product-box"
+                   [style.left.%]="detection.box.left"
+                   [style.top.%]="detection.box.top"
+                   [style.width.%]="detection.box.width"
+                   [style.height.%]="detection.box.height">
+                <span>{{ detection.productName }} · {{ detection.quantity }}</span>
+              </div>
+            }
+          } @else {
+            <div class="box product-box" style="left: 30%; top: 34%; width: 12%; height: 28%;"><span>stock 88%</span></div>
+            <div class="box warning-box" style="left: 64%; top: 45%; width: 13%; height: 33%;"><span>low 72%</span></div>
+          }
+
+          <div class="box person-box" style="left: 15%; top: 42%; width: 9%; height: 24%;"><span>person 94%</span></div>
+          <div class="video-tools"><mat-icon>zoom_in</mat-icon><mat-icon>fullscreen</mat-icon><mat-icon>linked_camera</mat-icon></div>
+        </div>
+      </mat-card>
+
+      <mat-card class="people-card">
+        <h2>Conteo de personas</h2>
+        <div class="people-controls">
+          <button mat-mini-fab color="primary" (click)="entries = entries + 1"><mat-icon>login</mat-icon></button>
+          <div><strong>{{ entries }}</strong><span>Entradas</span></div>
+          <button mat-mini-fab color="warn" (click)="exits = exits + 1"><mat-icon>logout</mat-icon></button>
+          <div><strong>{{ exits }}</strong><span>Salidas</span></div>
+          <button mat-flat-button color="primary" (click)="registerPeopleCounter()">Guardar conteo</button>
+        </div>
+      </mat-card>
+
+      <mat-card class="history-card">
+        <div class="history-header">
+          <h2>Historial YOLO</h2>
+          <div>
+            <button mat-button (click)="exportYoloReport()" [disabled]="!audits().length">Exportar auditorías</button>
+            <button mat-button (click)="exportPeopleReport()" [disabled]="!peopleCounters().length">Exportar afluencia</button>
+          </div>
+        </div>
+
+        @if (audits().length) {
+          <table mat-table [dataSource]="audits()" class="history-table">
+            <ng-container matColumnDef="createdAt"><th mat-header-cell *matHeaderCellDef>Fecha</th><td mat-cell *matCellDef="let audit">{{ audit.createdAt | date:'short' }}</td></ng-container>
+            <ng-container matColumnDef="camera"><th mat-header-cell *matHeaderCellDef>Cámara</th><td mat-cell *matCellDef="let audit">{{ getCameraName(audit.cameraId) }}</td></ng-container>
+            <ng-container matColumnDef="detections"><th mat-header-cell *matHeaderCellDef>Detecciones</th><td mat-cell *matCellDef="let audit">{{ getDetectionSummary(audit) }}</td></ng-container>
+            <ng-container matColumnDef="status"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let audit"><mat-chip>{{ audit.status }}</mat-chip></td></ng-container>
+            <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let audit"><button mat-button [disabled]="audit.status === 'Validado'" (click)="validateAudit(audit)">Validar</button></td></ng-container>
+            <tr mat-header-row *matHeaderRowDef="auditColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: auditColumns;"></tr>
+          </table>
+        } @else {
+          <div class="empty-history"><mat-icon>videocam_off</mat-icon><p>Aún no hay auditorías visuales guardadas.</p></div>
+        }
+      </mat-card>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,250 @@
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #ffffff;
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.language-switcher-wrapper {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+}
+
+.language-switcher-wrapper ::ng-deep .language-switcher {
+  background: rgba(228, 127, 4, 0.1) !important;
+  border: 1px solid rgba(228, 127, 4, 0.2) !important;
+}
+
+.language-switcher-wrapper ::ng-deep .lang-btn {
+  color: #1f2937 !important;
+}
+
+.language-switcher-wrapper ::ng-deep .lang-btn.active {
+  background: #E47F04 !important;
+  color: white !important;
+}
+
+.language-switcher-wrapper ::ng-deep .lang-btn:hover::before {
+  background: #E47F04 !important;
+  opacity: 0.2 !important;
+}
+
+.auth-branding {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.branding-content {
+  max-width: 450px;
+  width: 100%;
+  z-index: 1;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+}
+
+.brand-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #E47F04;
+  margin: 0;
+}
+
+.tagline {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: #1f2937;
+  font-weight: 500;
+  margin: 0;
+}
+
+.decorative-circles {
+  position: absolute;
+  z-index: 0;
+}
+
+.decorative-circles-left {
+  bottom: 5%;
+  left: 5%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(252, 190, 115, 0.54) 0%, rgba(252, 190, 115, 0.54) 50%, transparent 50%),
+              radial-gradient(circle, rgba(255, 198, 77, 0.79) 0%, rgba(255, 198, 77, 0.79) 60%, transparent 60%);
+  background-size: 50% 50%, 100% 100%;
+  opacity: 0.5;
+  background-position: 15% 75%, 0 0;
+  background-repeat: no-repeat;
+}
+
+.decorative-circles-right {
+  top: 5%;
+  right: 5%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(252, 190, 115, 0.54) 0%, rgba(252, 190, 115, 0.54) 50%, transparent 50%),
+              radial-gradient(circle, rgba(255, 198, 77, 0.79) 0%, rgba(255, 198, 77, 0.79) 60%, transparent 60%);
+  background-size: 50% 50%, 100% 100%;
+  opacity: 0.5;
+  background-position: 85% 25%, 0 0;
+  background-repeat: no-repeat;
+}
+
+.auth-form-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 2rem;
+  background-color: rgba(255, 173, 42, 0.05) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  border-radius: 12px !important;
+  z-index: 1;
+}
+
+.auth-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #E47F04;
+  margin: 0 0 2rem 0;
+  text-align: left;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.link-text {
+  color: #6b7280;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link-text:hover {
+  color: #E47F04;
+}
+
+.error-message {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.submit-button {
+  width: 100%;
+  height: 48px;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  background-color: #10b981 !important;
+  color: white !important;
+  border-radius: 24px !important;
+  text-transform: none !important;
+}
+
+.submit-button:hover {
+  background-color: #059669 !important;
+}
+
+.submit-button:disabled {
+  background-color: #d1d5db !important;
+  color: #9ca3af !important;
+}
+
+.alternative-action {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.alternative-text {
+  color: #6b7280;
+  margin-right: 0.25rem;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  height: auto !important;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  background-color: #ffffff !important;
+}
+
+::ng-deep .mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
+}
+
+@media (max-width: 1024px) {
+  .auth-container {
+    flex-direction: column;
+  }
+
+  .auth-branding {
+    min-height: 40vh;
+  }
+
+  .auth-form-wrapper {
+    min-height: 60vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-branding,
+  .auth-form-wrapper {
+    padding: 1.5rem;
+  }
+
+  .auth-card {
+    padding: 1.5rem;
+  }
+
+  .brand-name {
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: 1rem;
+  }
+
+  .decorative-circles-left,
+  .decorative-circles-right {
+    width: 150px;
+    height: 150px;
+  }
+}

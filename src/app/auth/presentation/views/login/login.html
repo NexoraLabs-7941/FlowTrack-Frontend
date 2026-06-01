@@ -1,0 +1,93 @@
+<div class="auth-container">
+  <div class="language-switcher-wrapper">
+    <app-language-switcher></app-language-switcher>
+  </div>
+
+  <div class="auth-branding">
+    <div class="branding-content">
+      <div class="logo-section">
+        <img src="assets/logo.png" alt="FlowTrack Logo" class="logo" />
+        <h1 class="brand-name">FlowTrack</h1>
+      </div>
+      <p class="tagline">{{ t('auth.tagline') }}</p>
+    </div>
+    <div class="decorative-circles decorative-circles-left"></div>
+  </div>
+
+  <div class="auth-form-wrapper">
+    <div class="decorative-circles decorative-circles-right"></div>
+    <mat-card class="auth-card">
+      <mat-card-content>
+        <h2 class="auth-title">{{ t('auth.login.title') }}</h2>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('auth.login.email') }}</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              [attr.aria-label]="t('auth.login.email')"
+              [attr.aria-required]="true"
+              autocomplete="email"
+            />
+            @if (loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
+              <mat-error>{{ t('auth.login.email') }} {{ t('auth.validation.required') }}</mat-error>
+            }
+            @if (loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched) {
+              <mat-error>{{ t('auth.validation.emailInvalid') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('auth.login.password') }}</mat-label>
+            <input
+              matInput
+              type="password"
+              formControlName="password"
+              [attr.aria-label]="t('auth.login.password')"
+              [attr.aria-required]="true"
+              autocomplete="current-password"
+            />
+            @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+              <mat-error>{{ t('auth.login.password') }} {{ t('auth.validation.passwordRequired') }}</mat-error>
+            }
+            @if (loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
+              <mat-error>{{ t('auth.validation.minLength').replace('{{min}}', '6') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="forgot-password">
+            <a href="#" class="link-text">{{ t('auth.login.forgotPassword') }}</a>
+          </div>
+
+          @if (authStore.error()) {
+            <div class="error-message" role="alert">
+              {{ t(authStore.error()!) }}
+            </div>
+          }
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="submit-button"
+            [disabled]="authStore.loading()"
+            [attr.aria-label]="t('auth.login.submit')"
+          >
+            @if (authStore.loading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              {{ t('auth.login.submit') }}
+            }
+          </button>
+
+          <div class="alternative-action">
+            <span class="alternative-text">{{ t('auth.login.noAccount') }}</span>
+            <a routerLink="/auth/register" class="link-text">{{ t('auth.login.createAccount') }}</a>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

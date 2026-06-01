@@ -1,0 +1,50 @@
+<mat-toolbar class="topbar">
+  <div class="topbar-content">
+    <div class="topbar-left">
+      <h1 class="page-title">{{ t(pageTitle) }}</h1>
+    </div>
+    
+    <div class="topbar-right">
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="notificationsMenu"
+        [attr.aria-label]="getNotificationCount() > 0 ? 
+          t('dashboard.notifications.title') + ' (' + getNotificationCount() + ')' : 
+          t('dashboard.notifications.title')"
+        [attr.aria-haspopup]="true"
+        [attr.aria-expanded]="false">
+        <mat-icon [matBadge]="getNotificationCount()" 
+                  matBadgeColor="warn" 
+                  matBadgeSize="small"
+                  aria-hidden="false">notifications</mat-icon>
+      </button>
+
+      <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+        <div class="notifications-header">
+          <h3 class="notifications-title">{{ t('dashboard.notifications.title') }}</h3>
+        </div>
+        <div class="notifications-list">
+          @if (getNotifications().length === 0) {
+            <div class="no-notifications">
+              <mat-icon>notifications_none</mat-icon>
+              <p>{{ t('dashboard.notifications.empty') }}</p>
+            </div>
+          } @else {
+            @for (notification of getNotifications(); track notification.id) {
+              <div class="notification-item notification-{{ notification.type }}">
+                <mat-icon class="notification-icon">
+                  {{ notification.type === 'warning' ? 'warning' : notification.type === 'alert' ? 'error' : 'info' }}
+                </mat-icon>
+                <div class="notification-content">
+                  <div class="notification-title">{{ t('dashboard.notificationTitles.' + notification.title) }}</div>
+                  <div class="notification-message">{{ getNotificationMessage(notification) }}</div>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>
+

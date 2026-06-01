@@ -1,0 +1,143 @@
+<section class="users-container" aria-label="{{ t('personalAdministration.title') }}">
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">{{ t('personalAdministration.title') }}</h1>
+      <p class="page-subtitle">{{ t('personalAdministration.subtitle') }}</p>
+    </div>
+    <button 
+      mat-raised-button 
+      class="btn-create" 
+      (click)="openCreateDialog()"
+      [attr.aria-label]="t('personalAdministration.aria.createUser')">
+      <mat-icon aria-hidden="true">person_add</mat-icon>
+      {{ t('personalAdministration.newUser') }}
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+        <input 
+          matInput 
+          [(ngModel)]="searchTerm" 
+          [placeholder]="t('personalAdministration.search')"
+          [attr.aria-label]="t('personalAdministration.aria.search')"/>
+        <button 
+          *ngIf="searchTerm" 
+          mat-icon-button 
+          matSuffix 
+          (click)="searchTerm = ''"
+          [attr.aria-label]="t('personalAdministration.clear')">
+          <mat-icon aria-hidden="true">close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>{{ t('personalAdministration.role') }}</mat-label>
+        <mat-select 
+          [(ngModel)]="filterRole"
+          [attr.aria-label]="t('personalAdministration.aria.filterRole')">
+          <mat-option value="todos">{{ t('personalAdministration.all') }}</mat-option>
+          <mat-option [value]="ROLE_ADMIN">{{ t('personalAdministration.admin') }}</mat-option>
+          <mat-option [value]="ROLE_USER">{{ t('personalAdministration.user') }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button 
+        *ngIf="searchTerm || filterRole !== 'todos'" 
+        mat-stroked-button 
+        class="btn-clear" 
+        (click)="clearFilters()"
+        [attr.aria-label]="t('personalAdministration.aria.clearFilters')">
+        <mat-icon aria-hidden="true">filter_alt_off</mat-icon>
+        {{ t('personalAdministration.clearFilters') }}
+      </button>
+    </div>
+
+    <div class="stats-section" role="status" aria-live="polite">
+      <div class="stat-chip admin">
+        <mat-icon aria-hidden="true">admin_panel_settings</mat-icon>
+        <span>{{ adminCount }} {{ t('personalAdministration.admins') }}</span>
+      </div>
+      <div class="stat-chip seller">
+        <mat-icon aria-hidden="true">person</mat-icon>
+        <span>{{ userCount }} {{ t('personalAdministration.users') }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="loading-container" role="status" aria-live="polite">
+    <mat-spinner diameter="48" aria-hidden="true"></mat-spinner>
+    <p>{{ t('personalAdministration.loadingUsers') }}</p>
+  </div>
+
+  <div *ngIf="error()" class="error-container" role="alert">
+    <mat-icon aria-hidden="true">error_outline</mat-icon>
+    <p>{{ error() }}</p>
+  </div>
+
+  <div *ngIf="!loading() && filteredUsers.length > 0" class="table-container">
+    <table mat-table [dataSource]="filteredUsers" class="users-table" [attr.aria-label]="t('personalAdministration.title')">
+      
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>{{ t('personalAdministration.user') }}</th>
+        <td mat-cell *matCellDef="let user">
+          <div class="user-info">
+            <div class="user-avatar" [class]="user.isAdmin() ? 'admin' : 'seller'" [attr.aria-label]="user.roleDisplayName">
+              {{ user.displayName.charAt(0).toUpperCase() }}
+            </div>
+            <div class="user-details">
+              <span class="user-name">{{ user.displayName }}</span>
+              <span class="user-email">{{ user.email }}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef>{{ t('personalAdministration.role') }}</th>
+        <td mat-cell *matCellDef="let user">
+          <span [class]="getRoleClass(user)" [attr.aria-label]="user.roleDisplayName">
+            <mat-icon class="role-icon" aria-hidden="true">{{ user.isAdmin() ? 'admin_panel_settings' : 'person' }}</mat-icon>
+            {{ user.roleDisplayName }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ t('personalAdministration.actions') }}</th>
+        <td mat-cell *matCellDef="let user" class="actions-cell">
+          <button 
+            mat-icon-button 
+            class="btn-edit"
+            [matTooltip]="t('personalAdministration.editUser')"
+            [attr.aria-label]="t('personalAdministration.editUser')"
+            (click)="openEditDialog(user)">
+            <mat-icon aria-hidden="true">edit</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            class="btn-delete"
+            [disabled]="!canDeleteUser(user)"
+            [matTooltip]="getDeleteTooltip(user)"
+            [attr.aria-label]="getDeleteTooltip(user)"
+            (click)="confirmDelete(user)">
+            <mat-icon aria-hidden="true">delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  <div *ngIf="!loading() && filteredUsers.length === 0 && !error()" class="empty-state" role="status">
+    <mat-icon aria-hidden="true">group_off</mat-icon>
+    <h3>{{ t('personalAdministration.noUsers') }}</h3>
+    <p *ngIf="searchTerm || filterRole !== 'todos'">{{ t('personalAdministration.noUsersFiltered') }}</p>
+    <p *ngIf="!searchTerm && filterRole === 'todos'">{{ t('personalAdministration.noUsersYet') }}</p>
+    
+  </div>
+</section>

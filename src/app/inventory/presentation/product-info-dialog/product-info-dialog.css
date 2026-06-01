@@ -1,0 +1,41 @@
+:host{ display:block; }
+
+.dlg-title{
+  text-align:center;
+  margin:6px 0 16px;
+  font-weight:700;
+  font-size:20px;
+  color:#1f1f1f !important;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:160px 1fr;
+  column-gap:32px;
+  row-gap:14px;
+  line-height:1.35;
+  margin-bottom:14px;
+}
+
+.label,
+.value{
+  color:#1f1f1f !important;
+  font-size:14px;
+}
+.label{ font-weight:600; }
+.value{ font-weight:500; }
+
+.actions{
+  display:flex;
+  justify-content:center;
+  margin-top:18px;
+}
+.btn-ghost{
+  background:#fff;
+  color:#e74c3c;
+  border:1.6px solid #e74c3c;
+  border-radius:999px;
+  padding:10px 44px;
+  font-weight:600;
+}
+.btn-ghost:hover{ background:#fff5f5; }

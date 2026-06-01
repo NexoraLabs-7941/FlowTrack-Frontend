@@ -1,0 +1,115 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 class="dialog-title">
+      {{ (data.mode === 'edit' ? 'personalAdministration.editUserTitle' : 'personalAdministration.newUserTitle') | translate }}
+    </h2>
+    <button 
+      mat-icon-button 
+      class="close-btn" 
+      (click)="cancel()" 
+      [disabled]="saving"
+      [attr.aria-label]="'common.cancel' | translate">
+      <mat-icon aria-hidden="true">close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content [formGroup]="form" class="dialog-content">
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="form-field form-field-full-width">
+        <mat-label>{{ 'personalAdministration.emailLabel' | translate }}</mat-label>
+        <input 
+          matInput 
+          type="email" 
+          formControlName="email" 
+          [placeholder]="'personalAdministration.emailPlaceholder' | translate"
+          [attr.aria-label]="'personalAdministration.emailLabel' | translate"
+          [attr.aria-required]="true"/>
+        <mat-icon matPrefix aria-hidden="true">email</mat-icon>
+        <mat-error *ngIf="form.get('email')?.hasError('required')">
+          {{ 'personalAdministration.emailRequired' | translate }}
+        </mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('email')">
+          {{ 'personalAdministration.emailInvalid' | translate }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field form-field-full-width">
+        <mat-label>{{ 'personalAdministration.passwordLabel' | translate }}</mat-label>
+        <input 
+          matInput 
+          type="password" 
+          formControlName="password" 
+          [placeholder]="data.mode === 'edit' ? ('personalAdministration.passwordPlaceholderOptional' | translate) : ('personalAdministration.passwordPlaceholder' | translate)"
+          [attr.aria-label]="'personalAdministration.passwordLabel' | translate"
+          [attr.aria-required]="data.mode === 'create'"/>
+        <mat-icon matPrefix aria-hidden="true">lock</mat-icon>
+        <mat-hint *ngIf="data.mode === 'edit'">{{ 'personalAdministration.passwordHintOptional' | translate }}</mat-hint>
+        <mat-error *ngIf="form.get('password')?.hasError('required')">
+          {{ 'personalAdministration.passwordRequired' | translate }}
+        </mat-error>
+        <mat-error *ngIf="form.get('password')?.hasError('minlength')">
+          {{ 'personalAdministration.passwordMinLength' | translate }}
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-field form-field-full-width permissions-section">
+        <div class="permissions-header">
+          <mat-icon class="permissions-icon" aria-hidden="true">security</mat-icon>
+          <label class="permissions-label">{{ 'personalAdministration.permissionsTitle' | translate }}</label>
+        </div>
+        <p class="permissions-hint">{{ 'personalAdministration.permissionsHint' | translate }}</p>
+        @if (loadingPermissions) {
+          <div class="permissions-loading" role="status" aria-live="polite">
+            <mat-spinner diameter="40" aria-hidden="true"></mat-spinner>
+            <span>{{ 'common.loading' | translate }}</span>
+          </div>
+        } @else {
+          <div class="permissions-grid" formArrayName="permissions" role="group" [attr.aria-label]="'personalAdministration.permissionsTitle' | translate">
+            <label 
+              *ngFor="let permission of availablePermissions; let i = index" 
+              class="permission-card"
+              [class.selected]="permissionsFormArray.at(i).value"
+              [class.disabled]="saving">
+              <input type="checkbox" [formControlName]="i" class="permission-input" />
+              <div class="permission-check">
+                <mat-icon>check</mat-icon>
+              </div>
+              <div class="permission-icon-wrapper" [style.background-color]="permission.color + '15'">
+                <mat-icon [style.color]="permission.color" aria-hidden="true">{{ permission.icon }}</mat-icon>
+              </div>
+              <span class="permission-label">{{ permission.i18nKey | translate }}</span>
+            </label>
+          </div>
+          <div class="permissions-summary" *ngIf="getSelectedPermissionsCount() > 0" role="status" aria-live="polite">
+            <mat-icon aria-hidden="true">check_circle</mat-icon>
+            <span>{{ 'personalAdministration.permissionsSelected' | translate: { count: getSelectedPermissionsCount() } }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button 
+      mat-stroked-button 
+      class="btn-cancel" 
+      (click)="cancel()" 
+      [disabled]="saving"
+      [attr.aria-label]="'common.cancel' | translate">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button 
+      mat-raised-button 
+      class="btn-save" 
+      (click)="save()" 
+      [disabled]="saving || form.invalid"
+      [attr.aria-label]="'common.save' | translate">
+      @if (saving) {
+        <mat-spinner diameter="20" class="spinner" aria-hidden="true"></mat-spinner>
+      } @else {
+        <mat-icon aria-hidden="true">person_add</mat-icon>
+      }
+      {{ 'common.save' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

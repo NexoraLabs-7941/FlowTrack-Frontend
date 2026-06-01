@@ -1,0 +1,101 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2>{{ 'inventory.newReplacement' | translate }}</h2>
+    <button mat-icon-button (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <div class="form-section">
+      <mat-form-field appearance="outline" class="form-field-full">
+        <mat-label>{{ 'inventory.product' | translate }}</mat-label>
+        <mat-select [(ngModel)]="selectedProductId">
+          <mat-option [value]="''" disabled>{{ 'inventory.select' | translate }}</mat-option>
+          <mat-option *ngFor="let product of products" [value]="product.id">
+            {{ product.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="stock-info" *ngIf="selectedProductId">
+        <div class="info-row">
+          <span class="info-label">{{ 'inventory.currentStock' | translate }}:</span>
+          <span class="info-value">{{ currentStock }}</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>{{ 'inventory.receiptDate' | translate }}</mat-label>
+          <input matInput [matDatepicker]="pickerRecepcion" [(ngModel)]="fechaRecepcion">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerRecepcion"></mat-datepicker-toggle>
+          <mat-datepicker #pickerRecepcion></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>{{ 'inventory.expirationDate' | translate }}</mat-label>
+          <input matInput [matDatepicker]="pickerVencimiento" [(ngModel)]="fechaVencimiento">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerVencimiento"></mat-datepicker-toggle>
+          <mat-datepicker #pickerVencimiento></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="quantity-section" *ngIf="selectedProductId">
+        <mat-form-field appearance="outline" class="form-field-full">
+          <mat-label>{{ 'inventory.amountEntering' | translate }}</mat-label>
+          <div class="quantity-control-wrapper">
+            <button mat-icon-button type="button" (click)="decrementQuantity()">
+              <mat-icon>expand_more</mat-icon>
+            </button>
+            <input
+              matInput
+              type="number"
+              min="0"
+              [(ngModel)]="quantity"
+              (ngModelChange)="onQuantityChange()"
+              class="quantity-input">
+            <button mat-icon-button type="button" (click)="incrementQuantity()">
+              <mat-icon>expand_less</mat-icon>
+            </button>
+          </div>
+        </mat-form-field>
+
+        <div class="stock-info">
+          <div class="info-row">
+            <span class="info-label">Total:</span>
+            <span class="info-value">{{ totalStock }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-message" *ngIf="isExpirationBeforeReception()">
+        <mat-icon color="warn">error</mat-icon>
+        <span>La fecha de vencimiento no puede ser anterior a la fecha de recepción</span>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Guardando...</p>
+    </div>
+
+    <div *ngIf="error && !loading" class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-stroked-button (click)="onCancel()">
+      {{ 'global.cancel' | translate }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!canSave || loading"
+      (click)="onSave()">
+      {{ 'global.save' | translate }}
+    </button>
+  </div>
+</div>

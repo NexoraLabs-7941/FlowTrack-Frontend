@@ -1,0 +1,603 @@
+{
+  "providers": [
+    {
+      "id": 2,
+      "firstName": "john",
+      "lastName": "Smith",
+      "phoneNumber": "666666666",
+      "email": "test@hotmail.com",
+      "ruc": "10987654321"
+    },
+    {
+      "id": 3,
+      "firstName": "Ariana",
+      "lastName": "Yasan",
+      "phoneNumber": "555-987-654",
+      "email": "arigatito@hotmail.com",
+      "ruc": "20987654321"
+    },
+    {
+      "id": 4,
+      "firstName": "lucas",
+      "lastName": "sanchez",
+      "phoneNumber": "555-123-456",
+      "email": "lucas@hotmail.com",
+      "ruc": "20123456789"
+    },
+    {
+      "firstName": "juan",
+      "lastName": "perez",
+      "phoneNumber": "987654321",
+      "email": "juan@gmail.com",
+      "ruc": "20123456786",
+      "id": 5
+    },
+    {
+      "id": 6,
+      "firstName": "juana",
+      "lastName": "manuel",
+      "phoneNumber": "987654321",
+      "email": "juan@gmail.com",
+      "ruc": "12345678901"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-001",
+      "name": "Lácteos",
+      "description": "Productos lácteos y derivados"
+    },
+    {
+      "id": "cat-002",
+      "name": "Bebidas",
+      "description": "Bebidas refrescantes y gaseosas"
+    },
+    {
+      "id": "cat-003",
+      "name": "Panadería",
+      "description": "Panes y productos de panadería"
+    },
+    {
+      "id": "cat-004",
+      "name": "Snacks",
+      "description": "Bocaditos y golosinas"
+    },
+    {
+      "id": "cat-005",
+      "name": "Abarrotes",
+      "description": "Productos de despensa básica"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-002",
+      "name": "Coca Cola 1.5L",
+      "description": "Gaseosa Coca Cola sabor original en botella de 1.5 litros",
+      "categoryId": "cat-002",
+      "providerId": "2",
+      "minStock": 30,
+      "unitPrice": 5,
+      "isActive": true
+    },
+    {
+      "id": "prod-003",
+      "name": "Pan Francés (unidad)",
+      "description": "Pan francés fresco del día, ideal para desayuno",
+      "categoryId": "cat-003",
+      "providerId": "3",
+      "minStock": 50,
+      "unitPrice": 0.3,
+      "isActive": true
+    },
+    {
+      "id": "prod-004",
+      "name": "Papas Lays Clásicas 130g",
+      "description": "Papas fritas Lays sabor clásico, bolsa familiar de 130 gramos",
+      "categoryId": "cat-004",
+      "providerId": "2",
+      "minStock": 15,
+      "unitPrice": 6.5,
+      "isActive": true
+    },
+    {
+      "id": "prod-005",
+      "name": "Arroz Costeño 1kg",
+      "description": "Arroz extra superior, grano seleccionado de primera calidad",
+      "categoryId": "cat-005",
+      "providerId": "4",
+      "minStock": 25,
+      "unitPrice": 4.2,
+      "isActive": true
+    },
+    {
+      "id": "prod-007",
+      "name": "Agua San Luis 2.5L",
+      "description": "Agua mineral sin gas en bidón de 2.5 litros",
+      "categoryId": "cat-002",
+      "providerId": "3",
+      "minStock": 40,
+      "unitPrice": 3.5,
+      "isActive": true
+    },
+    {
+      "id": "prod-008",
+      "name": "Queso Fresco 500g",
+      "description": "Queso fresco artesanal de vaca, ideal para ensaladas",
+      "categoryId": "cat-001",
+      "providerId": "4",
+      "minStock": 10,
+      "unitPrice": 12,
+      "isActive": false
+    },
+    {
+      "id": "prod-1760118675427",
+      "name": "Inca Kola 3L",
+      "description": "",
+      "categoryId": "cat-002",
+      "providerId": "3",
+      "minStock": 10,
+      "unitPrice": 12,
+      "isActive": true
+    }
+  ],
+  "stock": [
+    {
+      "id": "stock-001",
+      "productId": "prod-001",
+      "currentStock": 38,
+      "lastUpdated": "2025-10-10"
+    },
+    {
+      "id": "stock-002",
+      "productId": "prod-002",
+      "currentStock": 48,
+      "lastUpdated": "2025-01-08"
+    },
+    {
+      "id": "stock-003",
+      "productId": "prod-003",
+      "currentStock": 120,
+      "lastUpdated": "2025-01-08"
+    },
+    {
+      "id": "stock-004",
+      "productId": "prod-004",
+      "currentStock": 24,
+      "lastUpdated": "2025-10-10"
+    },
+    {
+      "id": "stock-005",
+      "productId": "prod-005",
+      "currentStock": 46,
+      "lastUpdated": "2025-10-10"
+    },
+    {
+      "id": "stock-006",
+      "productId": "prod-006",
+      "currentStock": 19,
+      "lastUpdated": "2025-10-10"
+    },
+    {
+      "id": "stock-007",
+      "productId": "prod-007",
+      "currentStock": 65,
+      "lastUpdated": "2025-01-08"
+    },
+    {
+      "id": "stock-1760110655840",
+      "productId": "prod-1760110655720",
+      "currentStock": 20,
+      "lastUpdated": "2025-10-10"
+    },
+    {
+      "id": "stock-1760118675503",
+      "productId": "prod-1760118675427",
+      "currentStock": 15,
+      "lastUpdated": "2025-10-10"
+    }
+  ],
+  "restockings": [
+    {
+      "id": "rest-001",
+      "lot": "L-01",
+      "receptionDate": "2025-01-05",
+      "expirationDate": "2025-06-05",
+      "items": [
+        {
+          "productId": "prod-001",
+          "quantityToAdd": 20
+        },
+        {
+          "productId": "prod-002",
+          "quantityToAdd": 30
+        },
+        {
+          "productId": "prod-006",
+          "quantityToAdd": 15
+        }
+      ]
+    },
+    {
+      "id": "rest-002",
+      "lot": "L-02",
+      "receptionDate": "2025-01-06",
+      "expirationDate": "2025-06-06",
+      "items": [
+        {
+          "productId": "prod-003",
+          "quantityToAdd": 50
+        },
+        {
+          "productId": "prod-004",
+          "quantityToAdd": 10
+        },
+        {
+          "productId": "prod-005",
+          "quantityToAdd": 25
+        }
+      ]
+    },
+    {
+      "id": "zxvkvcqz8",
+      "lot": "",
+      "receptionDate": "",
+      "expirationDate": "",
+      "items": [
+        {
+          "productId": "prod-004",
+          "quantityToAdd": 2
+        }
+      ]
+    },
+    {
+      "id": "kw2q512sx",
+      "lot": "",
+      "receptionDate": "",
+      "expirationDate": "",
+      "items": [
+        {
+          "productId": "prod-005",
+          "quantityToAdd": 1
+        },
+        {
+          "productId": "prod-006",
+          "quantityToAdd": 1
+        }
+      ]
+    },
+    {
+      "id": "t4rc077ai",
+      "lot": "",
+      "receptionDate": "",
+      "expirationDate": "",
+      "items": [
+        {
+          "productId": "prod-001",
+          "quantityToAdd": 1
+        }
+      ]
+    },
+    {
+      "id": "4qsj8sszg",
+      "lot": "",
+      "receptionDate": "",
+      "expirationDate": "",
+      "items": [
+        {
+          "productId": "prod-001",
+          "quantityToAdd": 2
+        }
+      ]
+    },
+    {
+      "id": "84nx9vono",
+      "lot": "L-05",
+      "receptionDate": "2025-04-08",
+      "expirationDate": "2028-12-12",
+      "items": [
+        {
+          "productId": "prod-1760110655720",
+          "quantityToAdd": 5
+        }
+      ]
+    },
+    {
+      "id": "6k6fhvrbp",
+      "lot": "L-04",
+      "receptionDate": "2023-08-25",
+      "expirationDate": "2030-08-04",
+      "items": [
+        {
+          "productId": "prod-1760118675427",
+          "quantityToAdd": 10
+        }
+      ]
+    },
+    {
+      "id": "bm0ye8r8m",
+      "lot": "L-06",
+      "receptionDate": "2022-04-15",
+      "expirationDate": "2027-12-24",
+      "items": [
+        {
+          "productId": "prod-1760118675427",
+          "quantityToAdd": 5
+        }
+      ]
+    }
+  ],
+  "dashboard": {
+    "stats": {
+      "productsInInventory": 9,
+      "monthlyIncome": 1250.5,
+      "salesThisMonth": 15,
+      "productsWithAlerts": 2
+    },
+    "monthlyIncome": [
+      {
+        "month": "Jan",
+        "amount": 350
+      },
+      {
+        "month": "Feb",
+        "amount": 420
+      },
+      {
+        "month": "Mar",
+        "amount": 300
+      },
+      {
+        "month": "Apr",
+        "amount": 480
+      },
+      {
+        "month": "May",
+        "amount": 520
+      },
+      {
+        "month": "Jun",
+        "amount": 150
+      },
+      {
+        "month": "Jul",
+        "amount": 380
+      },
+      {
+        "month": "Aug",
+        "amount": 580
+      },
+      {
+        "month": "Sep",
+        "amount": 450
+      },
+      {
+        "month": "Oct",
+        "amount": 520
+      },
+      {
+        "month": "Nov",
+        "amount": 380
+      },
+      {
+        "month": "Dec",
+        "amount": 1250
+      }
+    ],
+    "productSales": [
+      {
+        "productName": "Leche Gloria Entera 1L",
+        "percentage": 25.5
+      },
+      {
+        "productName": "Coca Cola 1.5L",
+        "percentage": 18.2
+      },
+      {
+        "productName": "Pan Francés (unidad)",
+        "percentage": 15.8
+      },
+      {
+        "productName": "Papas Lays Clásicas 130g",
+        "percentage": 12.3
+      },
+      {
+        "productName": "Arroz Costeño 1kg",
+        "percentage": 10.1
+      },
+      {
+        "productName": "Galletas Oreo 432g",
+        "percentage": 8.7
+      },
+      {
+        "productName": "Agua San Luis 2.5L",
+        "percentage": 5.2
+      },
+      {
+        "productName": "Sprite 500ml",
+        "percentage": 2.8
+      },
+      {
+        "productName": "Inca Kola 3L",
+        "percentage": 1.4
+      }
+    ],
+    "notifications": [
+      {
+        "id": "notif-001",
+        "type": "warning",
+        "title": "expiringProduct",
+        "message": "",
+        "data": {
+          "product": "Leche Gloria Entera 1L",
+          "date": "2025-06-05"
+        }
+      },
+      {
+        "id": "notif-002",
+        "type": "alert",
+        "title": "lowStock",
+        "message": "",
+        "data": {
+          "product": "Papas Lays Clásicas 130g",
+          "quantity": 24
+        }
+      },
+      {
+        "id": "notif-003",
+        "type": "warning",
+        "title": "expiringProduct",
+        "message": "",
+        "data": {
+          "product": "Inca Kola 3L",
+          "date": "2027-12-24"
+        }
+      }
+    ]
+  },
+  "kits": [
+    {
+      "id": "kit-001",
+      "name": "Combo Desayuno",
+      "price": 8.5,
+      "isEnabled": true,
+      "products": [
+        {
+          "productId": "prod-001",
+          "name": "Leche Gloria Entera 1L",
+          "quantity": 1
+        },
+        {
+          "productId": "prod-003",
+          "name": "Pan Francés (unidad)",
+          "quantity": 3
+        }
+      ]
+    },
+    {
+      "id": "kit-002",
+      "name": "Combo Película",
+      "price": 12,
+      "isEnabled": true,
+      "products": [
+        {
+          "productId": "prod-002",
+          "name": "Coca Cola 1.5L",
+          "quantity": 1
+        },
+        {
+          "productId": "prod-004",
+          "name": "Papas Lays Clásicas 130g",
+          "quantity": 1
+        },
+        {
+          "productId": "prod-006",
+          "name": "Galletas Oreo 432g",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "jpSSb5C",
+      "name": "Combo prueba",
+      "price": "15",
+      "isEnabled": true,
+      "products": [
+        {
+          "productId": "prod-001",
+          "name": "Leche Gloria Entera 1L",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "IbzFmSt",
+      "name": "Combo Almuerzo 2",
+      "price": "13.50",
+      "isEnabled": true,
+      "products": [
+        {
+          "productId": "prod-005",
+          "name": "Arroz Costeño 1kg",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "iGyU2VA",
+      "name": "Combo dulce",
+      "price": "9",
+      "isEnabled": true,
+      "products": [
+        {
+          "productId": "prod-002",
+          "name": "Coca Cola 1.5L",
+          "quantity": 1
+        },
+        {
+          "productId": "prod-005",
+          "name": "Arroz Costeño 1kg",
+          "quantity": 1
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "Juan Pérez Díaz",
+      "role": "Vendedor",
+      "email": "perez.j@company.com",
+      "status": "Activo"
+    },
+    {
+      "id": "2",
+      "name": "María López Gonzales",
+      "role": "Vendedor",
+      "email": "lopez.m@company.com",
+      "status": "Inactivo"
+    },
+    {
+      "id": "3",
+      "name": "Luis Ramírez Hurtado",
+      "role": "Vendedor",
+      "email": "ramirez.l@company.com",
+      "status": "Activo"
+    },
+    {
+      "id": "4",
+      "name": "Juan Pérez Aguirre",
+      "role": "Administrador",
+      "email": "admin@company.com",
+      "status": "Activo"
+    }
+  ],
+  "currentUser": {
+    "id": "4",
+    "name": "Juan Pérez Aguirre",
+    "role": "Administrador",
+    "email": "admin@company.com",
+    "status": "Activo"
+  },
+  "yoloCameras": [
+    {
+      "id": "cam-01",
+      "name": "Cámara Pasillo 1",
+      "streamUrl": "rtsp://192.168.1.101:554/live",
+      "status": "Online",
+      "location": "Almacén Norte",
+      "fps": 30,
+      "lastDetectionAt": "2026-06-01T04:33:13.783Z"
+    },
+    {
+      "id": "cam-04",
+      "name": "Cámara C4",
+      "streamUrl": "rtsp://192.168.1.105:554/live",
+      "status": "Offline",
+      "location": "Pasillo Central",
+      "fps": 0,
+      "lastDetectionAt": "2026-06-01T03:33:13.784Z"
+    }
+  ],
+  "yoloAudits": [],
+  "peopleCounters": []
+}

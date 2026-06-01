@@ -1,0 +1,475 @@
+<div class="reports-container">
+  <h2 class="header">{{ t('reports.title') }}</h2>
+
+  <div class="action-bar">
+    <div class="search-filter-group">
+    </div>
+
+    <div class="toolbar-buttons">
+      <button
+        class="btn-orange"
+        (click)="refreshReports()"
+        [disabled]="store.loading()">
+        <i class="material-icons">refresh</i>
+        {{ t('reports.refresh') }}
+      </button>
+    </div>
+  </div>
+
+  @if (store.loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>{{ t('reports.loading') }}</p>
+    </div>
+  } @else if (store.error()) {
+    <div class="error-container">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <p>{{ store.error() }}</p>
+      <button mat-raised-button color="primary" (click)="refreshReports()">
+        {{ t('reports.retry') }}
+      </button>
+    </div>
+  } @else {
+    <mat-tab-group class="reports-tabs">
+      <mat-tab [label]="t('reports.tabs.providers')">
+        <div class="tab-content">
+          <mat-card class="report-card">
+            <mat-card-header>
+              <div class="card-header-content">
+                <div>
+                  <mat-card-title>
+                    {{ t('reports.providers.title') }}
+                  </mat-card-title>
+                  <mat-card-subtitle>{{ t('reports.providers.subtitle') }}</mat-card-subtitle>
+                </div>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="exportProvidersReport()"
+                  [disabled]="!store.hasProvidersReport()"
+                  [matTooltip]="t('reports.export')">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              @if (store.hasProvidersReport()) {
+                <div class="filter-section">
+                  <mat-form-field appearance="outline" class="category-filter">
+                    <mat-label>{{ t('reports.providers.filterByCategory') }}</mat-label>
+                    <mat-select [(ngModel)]="selectedCategoryFilter" (selectionChange)="onCategoryFilterChange()">
+                      <mat-option [value]="null">{{ t('reports.providers.allCategories') }}</mat-option>
+                      @for (categoryName of availableCategories; track categoryName) {
+                        <mat-option [value]="categoryName">{{ categoryName }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  @if (selectedCategoryFilter) {
+                    <button mat-stroked-button (click)="clearCategoryFilter()" class="clear-filter-btn">
+                      {{ t('reports.clearFilter') }}
+                    </button>
+                  }
+                </div>
+
+                <table mat-table [dataSource]="filteredProvidersReport" class="reports-table">
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.providers.columns.name') }}</th>
+                    <td mat-cell *matCellDef="let provider">{{ provider.fullName }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="ruc">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.providers.columns.ruc') }}</th>
+                    <td mat-cell *matCellDef="let provider">{{ provider.ruc }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="email">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.providers.columns.email') }}</th>
+                    <td mat-cell *matCellDef="let provider">{{ provider.email }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="phone">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.providers.columns.phone') }}</th>
+                    <td mat-cell *matCellDef="let provider">{{ provider.phoneNumber }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="products">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.providers.columns.products') }}</th>
+                    <td mat-cell *matCellDef="let provider">
+                      @if (provider.productNames && provider.productNames.length > 0) {
+                        <div class="products-list">
+                          @for (productName of provider.productNames; track productName) {
+                            <mat-chip class="product-chip">{{ productName }}</mat-chip>
+                          }
+                        </div>
+                      } @else {
+                        <span class="no-products">-</span>
+                      }
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="providersColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: providersColumns;"></tr>
+                </table>
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>info</mat-icon>
+                  <p>{{ t('reports.providers.empty') }}</p>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="t('reports.tabs.stock')">
+        <div class="tab-content">
+          <mat-card class="report-card">
+            <mat-card-header>
+              <div class="card-header-content">
+                <div>
+                  <mat-card-title>
+                    {{ t('reports.stock.title') }}
+                  </mat-card-title>
+                  <mat-card-subtitle>{{ t('reports.stock.subtitle') }}</mat-card-subtitle>
+                </div>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="exportStockReport()"
+                  [disabled]="!store.hasStockReport()"
+                  [matTooltip]="t('reports.export')">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              @if (store.hasStockReport()) {
+                <table mat-table [dataSource]="store.stockReport()" class="reports-table">
+                  <ng-container matColumnDef="productName">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.stock.columns.productName') }}</th>
+                    <td mat-cell *matCellDef="let stock">{{ stock.productName }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="category">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.stock.columns.category') }}</th>
+                    <td mat-cell *matCellDef="let stock">{{ stock.categoryName }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="currentStock">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.stock.columns.currentStock') }}</th>
+                    <td mat-cell *matCellDef="let stock">{{ stock.currentStock }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="minStock">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.stock.columns.minStock') }}</th>
+                    <td mat-cell *matCellDef="let stock">{{ stock.minStock }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="unitPrice">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.stock.columns.unitPrice') }}</th>
+                    <td mat-cell *matCellDef="let stock">s/ {{ stock.unitPrice | number:'1.2-2' }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="totalValue">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.stock.columns.totalValue') }}</th>
+                    <td mat-cell *matCellDef="let stock">s/ {{ stock.totalValue | number:'1.2-2' }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.stock.columns.status') }}</th>
+                    <td mat-cell *matCellDef="let stock">
+                      <mat-chip [color]="getStockStatusColor(stock.stockStatus)">
+                        {{ t('reports.stock.status.' + stock.stockStatus) }}
+                      </mat-chip>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="stockColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: stockColumns;"></tr>
+                </table>
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>info</mat-icon>
+                  <p>{{ t('reports.stock.empty') }}</p>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="t('reports.tabs.expiring')">
+        <div class="tab-content">
+          <mat-card class="report-card">
+            <mat-card-header>
+              <div class="card-header-content">
+                <div>
+                  <mat-card-title>
+                    {{ t('reports.expiring.title') }}
+                  </mat-card-title>
+                  <mat-card-subtitle>{{ t('reports.expiring.subtitle') }}</mat-card-subtitle>
+                </div>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="exportExpiringProductsReport()"
+                  [disabled]="!store.hasExpiringProductsReport()"
+                  [matTooltip]="t('reports.export')">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              @if (store.hasExpiringProductsReport()) {
+                <div class="filter-section">
+                  <mat-form-field appearance="outline" class="month-filter">
+                    <mat-label>{{ t('reports.expiring.filterByMonth') }}</mat-label>
+                    <mat-select [(ngModel)]="selectedMonth" (selectionChange)="onMonthFilterChange()">
+                      <mat-option [value]="null">{{ t('reports.expiring.next30Days') }}</mat-option>
+                      @for (month of availableMonths; track month) {
+                        <mat-option [value]="month">{{ getMonthDisplayName(month) }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-checkbox
+                    [(ngModel)]="showAllProducts"
+                    (change)="onShowAllChange()"
+                    class="show-all-checkbox">
+                    {{ t('reports.expiring.showAll') }}
+                  </mat-checkbox>
+                  @if (selectedMonth || showAllProducts) {
+                    <button
+                      mat-icon-button
+                      (click)="clearMonthFilter()"
+                      [matTooltip]="t('reports.expiring.clearFilter')">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  }
+                </div>
+                @if (filteredExpiringProducts.length > 0) {
+                  <table mat-table [dataSource]="filteredExpiringProducts" class="reports-table">
+                    <ng-container matColumnDef="productName">
+                      <th mat-header-cell *matHeaderCellDef>{{ t('reports.expiring.columns.productName') }}</th>
+                      <td mat-cell *matCellDef="let product">{{ product.productName }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="category">
+                      <th mat-header-cell *matHeaderCellDef>{{ t('reports.expiring.columns.category') }}</th>
+                      <td mat-cell *matCellDef="let product">{{ product.categoryName }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="expirationDate">
+                      <th mat-header-cell *matHeaderCellDef>{{ t('reports.expiring.columns.expirationDate') }}</th>
+                      <td mat-cell *matCellDef="let product">{{ product.expirationDate | date:'dd/MM/yyyy' }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="daysLeft">
+                      <th mat-header-cell *matHeaderCellDef>{{ t('reports.expiring.columns.daysLeft') }}</th>
+                      <td mat-cell *matCellDef="let product">{{ formatDaysUntilExpiration(product) }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="currentStock">
+                      <th mat-header-cell *matHeaderCellDef>{{ t('reports.expiring.columns.currentStock') }}</th>
+                      <td mat-cell *matCellDef="let product">{{ product.currentStock }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="lot">
+                      <th mat-header-cell *matHeaderCellDef>{{ t('reports.expiring.columns.lot') }}</th>
+                      <td mat-cell *matCellDef="let product">{{ product.lot || '-' }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef>{{ t('reports.expiring.columns.status') }}</th>
+                      <td mat-cell *matCellDef="let product">
+                        <mat-chip [color]="getExpirationStatusColor(product.getExpirationStatus())">
+                          {{ t('reports.expiring.status.' + product.getExpirationStatus()) }}
+                        </mat-chip>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="expiringColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: expiringColumns;"></tr>
+                  </table>
+                } @else {
+                  <div class="empty-state">
+                    <mat-icon>info</mat-icon>
+                    <p>
+                      @if (selectedMonth) {
+                        {{ t('reports.expiring.emptyFiltered') }}
+                      } @else if (showAllProducts) {
+                        {{ t('reports.expiring.empty') }}
+                      } @else {
+                        {{ t('reports.expiring.emptyNext30Days') }}
+                      }
+                    </p>
+                  </div>
+                }
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>info</mat-icon>
+                  <p>{{ t('reports.expiring.empty') }}</p>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="t('reports.tabs.lowStock')">
+        <div class="tab-content">
+          <mat-card class="report-card">
+            <mat-card-header>
+              <div class="card-header-content">
+                <div>
+                  <mat-card-title>
+                    {{ t('reports.lowStock.title') }}
+                  </mat-card-title>
+                  <mat-card-subtitle>{{ t('reports.lowStock.subtitle') }}</mat-card-subtitle>
+                </div>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="exportLowStockReport()"
+                  [disabled]="!store.hasLowStockReport()"
+                  [matTooltip]="t('reports.export')">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              @if (store.hasLowStockReport()) {
+                <table mat-table [dataSource]="store.lowStockReport()" class="reports-table">
+                  <ng-container matColumnDef="productName">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.lowStock.columns.productName') }}</th>
+                    <td mat-cell *matCellDef="let product">{{ product.productName }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="category">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.lowStock.columns.category') }}</th>
+                    <td mat-cell *matCellDef="let product">{{ product.categoryName }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="currentStock">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.lowStock.columns.currentStock') }}</th>
+                    <td mat-cell *matCellDef="let product">{{ product.currentStock }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="minStock">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.lowStock.columns.minStock') }}</th>
+                    <td mat-cell *matCellDef="let product">{{ product.minStock }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="unitPrice">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.lowStock.columns.unitPrice') }}</th>
+                    <td mat-cell *matCellDef="let product">s/ {{ product.unitPrice | number:'1.2-2' }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.lowStock.columns.status') }}</th>
+                    <td mat-cell *matCellDef="let product">
+                      <mat-chip [color]="getStockStatusColor(product.getStockStatus())">
+                        {{ t('reports.lowStock.status.' + product.getStockStatus()) }}
+                      </mat-chip>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="lowStockColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: lowStockColumns;"></tr>
+                </table>
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>info</mat-icon>
+                  <p>{{ t('reports.lowStock.empty') }}</p>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="t('reports.tabs.sales')">
+        <div class="tab-content">
+          <mat-card class="report-card">
+            <mat-card-header>
+              <div class="card-header-content">
+                <div>
+                  <mat-card-title>
+                    {{ t('reports.sales.title') }}
+                  </mat-card-title>
+                  <mat-card-subtitle>{{ t('reports.sales.subtitle') }}</mat-card-subtitle>
+                </div>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="exportSalesReport()"
+                  [disabled]="!store.hasSalesReport()"
+                  [matTooltip]="t('reports.export')">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              @if (store.hasSalesReport()) {
+                <table mat-table [dataSource]="store.salesReport()" class="reports-table">
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.sales.columns.id') }}</th>
+                    <td mat-cell *matCellDef="let sale">{{ sale.id }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="date">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.sales.columns.date') }}</th>
+                    <td mat-cell *matCellDef="let sale">
+                      @if (sale.createdAt) {
+                        {{ formatDate(sale.createdAt) }}
+                      } @else {
+                        -
+                      }
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="totalAmount">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.sales.columns.totalAmount') }}</th>
+                    <td mat-cell *matCellDef="let sale">s/ {{ sale.totalAmount | number:'1.2-2' }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="products">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.sales.columns.products') }}</th>
+                    <td mat-cell *matCellDef="let sale">
+                      @if (sale.details && sale.details.length > 0) {
+                        <div class="sales-details-list">
+                          @for (detail of sale.details; track detail.id) {
+                            <div class="sales-detail-item">
+                              <div class="detail-info">
+                                <span class="detail-quantity">{{ detail.quantity }}x</span>
+                                <span class="detail-name">{{ getProductName(detail.productId) }}</span>
+                              </div>
+                              <div class="detail-prices">
+                                <span class="detail-unit-price">s/ {{ detail.unitPrice | number:'1.2-2' }}</span>
+                                <span class="detail-total-price">s/ {{ detail.totalPrice | number:'1.2-2' }}</span>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      } @else {
+                        <span class="no-products">-</span>
+                      }
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="salesColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: salesColumns;"></tr>
+                </table>
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>info</mat-icon>
+                  <p>{{ t('reports.sales.empty') }}</p>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>
+

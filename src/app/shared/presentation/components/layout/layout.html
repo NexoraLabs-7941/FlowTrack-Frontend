@@ -1,0 +1,10 @@
+<div class="layout-container" [class.mobile-layout]="isMobile">
+  <app-sidebar *ngIf="!isMobile"></app-sidebar>
+  <div class="content-wrapper">
+    <app-topbar></app-topbar>
+    <div class="main-content" [class.mobile-content]="isMobile">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <app-mobile-nav *ngIf="isMobile"></app-mobile-nav>
+</div>

@@ -1,0 +1,98 @@
+<div class="yolo-page-container">
+
+  <div class="page-breadcrumb">
+    <span>Inventario / Ingresar Reposición / <strong>Yolo</strong></span>
+  </div>
+
+  <div class="top-row">
+    <div class="lote-group">
+      <label>Lote</label>
+      <input class="input-field" [(ngModel)]="lote" placeholder="L-01" />
+    </div>
+    <div class="dates-group">
+      <div class="date-item">
+        <label>Fecha recepción</label>
+        <input
+          class="input-field date-field"
+          type="date"
+          [ngModel]="fechaRecepcionStr"
+          (ngModelChange)="onFechaRecepcionChange($event)"
+        />
+      </div>
+      <div class="date-item">
+        <label>Fecha de vencimiento</label>
+        <input
+          class="input-field date-field"
+          type="date"
+          [ngModel]="fechaVencimientoStr"
+          (ngModelChange)="onFechaVencimientoChange($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="yolo-layout">
+
+    <div class="yolo-image-panel">
+      <div class="image-preview" *ngIf="yoloImagePreview">
+        <img [src]="yoloImagePreview" alt="Foto subida" />
+        <span class="live-badge">● LIVE YOLO FEED</span>
+      </div>
+      <div class="image-placeholder" *ngIf="!yoloImagePreview">
+        <mat-icon>image</mat-icon>
+        <p>Sin imagen</p>
+      </div>
+      <label class="btn-upload">
+        + Subir foto
+        <input type="file" accept="image/*" (change)="onImageSelected($event)" hidden />
+      </label>
+    </div>
+
+    <div class="yolo-table-panel">
+      <div class="yolo-table-header">
+        <span>Items por Validar</span>
+        <span class="filter-label">☰ FILTRAR POR PASILLO</span>
+      </div>
+      <table class="validation-table">
+        <thead>
+        <tr>
+          <th>PRODUCTO</th>
+          <th>STOCK ACTUAL</th>
+          <th>CANT. DETECTADA</th>
+          <th>CANT. VALIDADA</th>
+          <th>TOTAL</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let d of yoloDetections; let i = index">
+          <td class="product-name-cell">{{ d.productName }}</td>
+          <td class="center">{{ d.currentStock }}</td>
+          <td class="center detected">{{ d.detectedQuantity }}</td>
+          <td class="center">
+            <input
+              class="qty-input-inline"
+              type="number"
+              [value]="d.validatedQuantity"
+              (change)="updateDetectionQty(i, +$any($event.target).value)"
+              min="0"
+            />
+          </td>
+          <td class="center total-green">{{ d.total }}</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="table-actions">
+        <button class="btn-cancel" (click)="goBack()">Volver</button>
+        <button class="btn-save" [disabled]="!canSave || loading" (click)="onSave()">Guardar</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Guardando...</p>
+  </div>
+
+</div>

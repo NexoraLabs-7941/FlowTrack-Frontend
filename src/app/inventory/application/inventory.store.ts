@@ -9,22 +9,14 @@ import { CategoryApi } from '../infrastructure/category-api';
 import { ProvidersApi } from '../../providers-management/infrastructure/providers-api';
 import { KitApi } from '../infrastructure/kit-api';
 import { BatchApi } from '../infrastructure/batch-api';
+import { YoloDetection } from '../domain/model/YoloDetection';
 
-/**
- * Interface for calculated stock from batches.
- */
 export interface StockInfo {
   productId: string;
   currentStock: number;
   lastUpdated: string;
 }
 
-/**
- * Store for managing inventory state and operations.
- * @remarks
- * This service orchestrates inventory use cases and manages inventory state.
- * Stock is calculated from batches (sum of quantities per product).
- */
 @Injectable({
   providedIn: 'root'
 })
@@ -45,9 +37,6 @@ export class InventoryStore {
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
 
-  /**
-   * Computed stock from batches - calculates total quantity per product.
-   */
   readonly stock = computed<StockInfo[]>(() => {
     const batches = this.batches();
     const stockMap = new Map<string, { quantity: number; lastDate: string }>();
@@ -110,7 +99,7 @@ export class InventoryStore {
     this.categoriesApi.getAll().subscribe({
       next: (categories: any[]) => {
         const categoryEntities = categories.map(cat => new Category({
-          id: String(cat.id), // Convert id to string (API returns number)
+          id: String(cat.id),
           name: cat.name
         }));
         this.categoriesSignal.set(categoryEntities);
@@ -138,7 +127,6 @@ export class InventoryStore {
       }
     });
 
-    // Load batches - stock is calculated from batches
     this.batchApi.getBatches().subscribe({
       next: (batches: Batch[]) => {
         this.batchesSignal.set(batches);
@@ -151,18 +139,12 @@ export class InventoryStore {
     });
   }
 
-  /**
-   * Adds a new product to the store.
-   * @param product - The product to add.
-   */
   addProduct(product: Product): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-
     this.productsApi.createProduct(product).subscribe({
       next: (newProduct: Product) => {
-        const currentProducts = this.productsSignal();
-        this.productsSignal.set([...currentProducts, newProduct]);
+        this.productsSignal.set([...this.productsSignal(), newProduct]);
         this.loadingSignal.set(false);
       },
       error: (err: any) => {
@@ -172,22 +154,17 @@ export class InventoryStore {
     });
   }
 
-  /**
-   * Updates an existing product in the store.
-   * @param product - The updated product.
-   */
   updateProduct(product: Product): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-
     this.productsApi.updateProduct(product, Number(product.id)).subscribe({
       next: (updatedProduct: Product) => {
-        const currentProducts = this.productsSignal();
-        const index = currentProducts.findIndex(p => p.id === updatedProduct.id);
+        const current = this.productsSignal();
+        const index = current.findIndex(p => p.id === updatedProduct.id);
         if (index > -1) {
-          const updatedProducts = [...currentProducts];
-          updatedProducts[index] = updatedProduct;
-          this.productsSignal.set(updatedProducts);
+          const updated = [...current];
+          updated[index] = updatedProduct;
+          this.productsSignal.set(updated);
         }
         this.loadingSignal.set(false);
       },
@@ -198,18 +175,12 @@ export class InventoryStore {
     });
   }
 
-  /**
-   * Removes a product from the store.
-   * @param productId - The ID of the product to remove.
-   */
   removeProduct(productId: string): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-
     this.productsApi.deleteProduct(Number(productId)).subscribe({
       next: () => {
-        const currentProducts = this.productsSignal();
-        this.productsSignal.set(currentProducts.filter(p => p.id !== productId));
+        this.productsSignal.set(this.productsSignal().filter(p => p.id !== productId));
         this.loadingSignal.set(false);
       },
       error: (err: any) => {
@@ -219,22 +190,16 @@ export class InventoryStore {
     });
   }
 
-  /**
-   * Adds a new category to the store.
-   * @param categoryData - The category data to add (name and description).
-   */
   addCategory(categoryData: { name: string; description: string }): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-
     this.categoriesApi.createCategory(categoryData.name, categoryData.description).subscribe({
       next: (createdCategory: any) => {
         const categoryEntity = new Category({
-          id: String(createdCategory.id), // Convert id to string
+          id: String(createdCategory.id),
           name: createdCategory.name
         });
-        const currentCategories = this.categoriesSignal();
-        this.categoriesSignal.set([...currentCategories, categoryEntity]);
+        this.categoriesSignal.set([...this.categoriesSignal(), categoryEntity]);
         this.loadingSignal.set(false);
       },
       error: (err: any) => {
@@ -244,41 +209,26 @@ export class InventoryStore {
     });
   }
 
-  /**
-   * Updates an existing category in the store.
-   * @param category - The updated category.
-   */
   updateCategory(category: Category): void {
-    const currentCategories = this.categoriesSignal();
-    const index = currentCategories.findIndex(c => c.id === category.id);
+    const current = this.categoriesSignal();
+    const index = current.findIndex(c => c.id === category.id);
     if (index > -1) {
-      const updatedCategories = [...currentCategories];
-      updatedCategories[index] = category;
-      this.categoriesSignal.set(updatedCategories);
+      const updated = [...current];
+      updated[index] = category;
+      this.categoriesSignal.set(updated);
     }
   }
 
-  /**
-   * Removes a category from the store.
-   * @param categoryId - The ID of the category to remove.
-   */
   removeCategory(categoryId: string): void {
-    const currentCategories = this.categoriesSignal();
-    this.categoriesSignal.set(currentCategories.filter(c => c.id !== categoryId));
+    this.categoriesSignal.set(this.categoriesSignal().filter(c => c.id !== categoryId));
   }
 
-  /**
-   * Adds a new kit to the store.
-   * @param kit - The kit to add.
-   */
   addKit(kit: Kit): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-
     this.kitApi.createKit(kit).subscribe({
       next: (createdKit: Kit) => {
-        const currentKits = this.kitsSignal();
-        this.kitsSignal.set([...currentKits, createdKit]);
+        this.kitsSignal.set([...this.kitsSignal(), createdKit]);
         this.loadingSignal.set(false);
       },
       error: (err: Error) => {
@@ -288,22 +238,17 @@ export class InventoryStore {
     });
   }
 
-  /**
-   * Updates an existing kit in the store.
-   * @param kit - The updated kit.
-   */
   updateKit(kit: Kit): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-
     this.kitApi.updateKit(kit, Number(kit.id)).subscribe({
       next: (updatedKit: Kit) => {
-        const currentKits = this.kitsSignal();
-        const index = currentKits.findIndex(k => k.id === updatedKit.id);
+        const current = this.kitsSignal();
+        const index = current.findIndex(k => k.id === updatedKit.id);
         if (index > -1) {
-          const updatedKits = [...currentKits];
-          updatedKits[index] = updatedKit;
-          this.kitsSignal.set(updatedKits);
+          const updated = [...current];
+          updated[index] = updatedKit;
+          this.kitsSignal.set(updated);
         }
         this.loadingSignal.set(false);
       },
@@ -314,18 +259,12 @@ export class InventoryStore {
     });
   }
 
-  /**
-   * Removes a kit from the store.
-   * @param kitId - The ID of the kit to remove.
-   */
   removeKit(kitId: string): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-
     this.kitApi.deleteKit(Number(kitId)).subscribe({
       next: () => {
-        const currentKits = this.kitsSignal();
-        this.kitsSignal.set(currentKits.filter(k => k.id !== kitId));
+        this.kitsSignal.set(this.kitsSignal().filter(k => k.id !== kitId));
         this.loadingSignal.set(false);
       },
       error: (err: Error) => {
@@ -335,18 +274,12 @@ export class InventoryStore {
     });
   }
 
-  /**
-   * Adds a new batch to the store (replaces old restocking functionality).
-   * @param batch - The batch to add.
-   */
   addBatch(batch: Batch): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-
     this.batchApi.createBatch(batch).subscribe({
       next: (createdBatch: Batch) => {
-        const currentBatches = this.batchesSignal();
-        this.batchesSignal.set([...currentBatches, createdBatch]);
+        this.batchesSignal.set([...this.batchesSignal(), createdBatch]);
         this.loadingSignal.set(false);
       },
       error: (err: any) => {
@@ -356,38 +289,35 @@ export class InventoryStore {
     });
   }
 
-  /**
-   * Gets current stock for a specific product.
-   * @param productId - The product ID.
-   * @returns The current stock quantity for the product.
-   */
   getStockForProduct(productId: string): number {
-    const stockInfo = this.stock().find(s => s.productId === productId);
-    return stockInfo?.currentStock || 0;
+    return this.stock().find(s => s.productId === productId)?.currentStock || 0;
   }
 
-  /**
-   * Gets batches for a specific product.
-   * @param productId - The product ID.
-   * @returns Array of batches for the product.
-   */
   getBatchesForProduct(productId: string): Batch[] {
     return this.batches().filter(b => String(b.productId) === productId);
   }
 
-  /**
-   * Refreshes inventory data.
-   */
+  simulateYoloDetection(productIds: string[]): YoloDetection[] {
+    return productIds
+      .filter(id => !!id)
+      .map(productId => {
+        const product = this.products().find(p => p.id === productId);
+        const currentStock = this.getStockForProduct(productId);
+        const detectedQty = Math.floor(Math.random() * 20) + 1;
+        return new YoloDetection({
+          productId,
+          productName: product?.name ?? 'Desconocido',
+          currentStock,
+          detectedQuantity: detectedQty,
+          validatedQuantity: detectedQty
+        });
+      });
+  }
+
   refresh(): void {
     this.loadInventoryData();
   }
 
-  /**
-   * Formats error messages for better user experience.
-   * @param error - The error object.
-   * @param fallback - The fallback message if error is not an Error instance.
-   * @returns A formatted error message.
-   */
   private formatError(error: any, fallback: string): string {
     if (error instanceof Error) {
       return error.message.includes('Resource not found') ? `${fallback}: Not found` : error.message;

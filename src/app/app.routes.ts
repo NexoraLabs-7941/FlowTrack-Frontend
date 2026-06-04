@@ -51,6 +51,14 @@ export const routes: Routes = [
         data: { permissions: ['inventory_access'] }
       },
       {
+        path: 'inventario/reposicion/yolo',
+        loadComponent: () =>
+          import('./inventory/presentation/restocking-yolo-page/restocking-yolo-page')
+            .then(m => m.RestockingYoloPageComponent),
+        canActivate: [permissionGuard],
+        data: { permissions: ['inventory_access'] }
+      },
+      {
         path: 'reportes',
         component: ReportsComponent,
         canActivate: [permissionGuard],

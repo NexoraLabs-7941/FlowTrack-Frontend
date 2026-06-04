@@ -1,225 +1,250 @@
 .dialog-container {
-  width: 520px;
-  max-width: 90vw;
+  width: 680px;
+  max-width: 95vw;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  font-family: 'Inter', sans-serif;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
+/* Header */
 .dialog-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 20px 24px 12px;
 }
 
 .dialog-header h2 {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #333;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 
+.btn-yolo {
+  background: #f97316;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-yolo:hover { background: #ea6c0a; }
+
+/* Content */
 .dialog-content {
-  padding: 20px;
+  padding: 0 24px 16px;
   overflow-y: auto;
   flex: 1;
 }
 
-.form-section {
+/* Top row: lote + fechas */
+.top-row {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.form-field-full {
-  width: 100%;
-}
-
-.form-field {
-  width: 100%;
-}
-
-.stock-info {
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-top: 4px;
-}
-
-.info-row {
+.lote-group {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
-.info-label {
+.lote-group label {
+  font-size: 0.875rem;
+  color: #f97316;
   font-weight: 600;
-  color: #666;
+  white-space: nowrap;
+}
+
+.input-field {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  width: 100px;
+  outline: none;
+}
+.input-field:focus { border-color: #f97316; }
+
+.dates-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-item label {
+  font-size: 0.8rem;
+  color: #555;
+  white-space: nowrap;
+}
+
+.date-field {
+  width: 130px;
+}
+
+/* Table */
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.products-table thead tr {
+  background: #2d2d2d;
+  color: white;
+}
+
+.products-table thead th {
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.products-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.products-table tbody td {
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  color: #333;
+  vertical-align: middle;
+}
+
+.center { text-align: center; }
+
+.product-select {
+  width: 100%;
+  min-width: 140px;
   font-size: 0.875rem;
 }
 
-.info-value {
-  font-weight: 700;
-  color: #333;
-  font-size: 0.95rem;
-}
-
-.quantity-section {
-  margin-top: 4px;
-}
-
-.quantity-control-wrapper {
+/* Quantity control */
+.qty-control {
   display: flex;
   align-items: center;
-  gap: 6px;
-  width: 100%;
+  justify-content: center;
+  gap: 10px;
 }
 
-.quantity-control-wrapper button {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
+.qty-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #555;
+  padding: 2px 6px;
+  line-height: 1;
 }
+.qty-btn:hover { color: #f97316; }
 
-.quantity-control-wrapper mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-}
-
-.quantity-input {
-  flex: 1;
+.qty-value {
+  font-weight: 600;
+  min-width: 24px;
   text-align: center;
-  font-size: 0.95rem;
-  -moz-appearance: textfield;
 }
 
-.quantity-input::-webkit-outer-spin-button,
-.quantity-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.total-value {
+  font-weight: 700;
+  color: #1a1a1a;
 }
 
+.remove-btn {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 4px;
+}
+.remove-btn:hover { color: #e53e3e; }
+
+/* Errors */
 .error-message {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 10px 12px;
-  background-color: #ffebee;
+  background: #ffebee;
   border-radius: 6px;
   color: #c62828;
   font-size: 0.875rem;
+  margin-top: 12px;
 }
 
-.error-message mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-}
-
-.loading-container,
-.error-container {
+.loading-container, .error-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 24px 20px;
-  gap: 10px;
-}
-
-.loading-container p,
-.error-container p {
+  padding: 20px;
+  gap: 8px;
   color: #666;
   font-size: 0.875rem;
-  margin: 0;
 }
 
-.loading-container mat-spinner {
-  width: 40px !important;
-  height: 40px !important;
-}
-
-.error-container mat-icon {
-  font-size: 36px;
-  width: 36px;
-  height: 36px;
-  color: #f44336;
-}
-
+/* Actions */
 .dialog-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 12px 20px;
-  border-top: 1px solid #e0e0e0;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid #f0f0f0;
 }
 
-.dialog-actions button {
-  min-width: 100px;
-  padding: 8px 16px;
-  font-size: 0.9rem;
+.btn-cancel {
+  border: 2px solid #f97316;
+  background: transparent;
+  color: #f97316;
+  border-radius: 50px;
+  padding: 10px 40px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
+.btn-cancel:hover { background: #fff5ee; }
 
-/* Make Material form fields more compact */
-::ng-deep .restocking-dialog .mat-mdc-form-field {
-  font-size: 0.875rem;
+.btn-save {
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 40px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
 }
+.btn-save:hover:not(:disabled) { background: #16a34a; }
+.btn-save:disabled { background: #9ca3af; cursor: not-allowed; }
 
-::ng-deep .restocking-dialog .mat-mdc-form-field-subscript-wrapper {
-  margin-top: 4px;
-}
+/* Compact Material fields */
+::ng-deep .restocking-dialog .mat-mdc-form-field-subscript-wrapper { display: none; }
+::ng-deep .restocking-dialog .mat-mdc-text-field-wrapper { padding-bottom: 0; }
+::ng-deep .restocking-dialog .mat-mdc-form-field-infix { min-height: 36px; padding: 6px 0; }
 
-::ng-deep .restocking-dialog .mat-mdc-form-field-infix {
-  min-height: 36px;
-  padding: 8px 0;
-}
-
-::ng-deep .restocking-dialog .mat-mdc-text-field-wrapper {
-  padding-bottom: 0;
-}
-
-::ng-deep .restocking-dialog .mat-mdc-form-field-icon-suffix {
-  padding-right: 8px;
-}
-
-::ng-deep .restocking-dialog .mat-mdc-select-value {
-  font-size: 0.875rem;
-}
-
-::ng-deep .restocking-dialog .mat-mdc-form-field-label {
-  font-size: 0.75rem;
-}
-
-::ng-deep .restocking-dialog .mat-mdc-form-field-label-wrapper {
-  font-size: 0.75rem;
-}
-
-::ng-deep .restocking-dialog input.mat-mdc-input-element {
-  font-size: 0.75rem;
-}
-
-::ng-deep .restocking-dialog .mat-mdc-input-element {
-  font-size: 0.75rem !important;
-}
-
-::ng-deep .restocking-dialog .mat-datepicker-input {
-  font-size: 0.75rem !important;
-}
-
-@media (max-width: 768px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .dialog-container {
-    width: 100%;
-  }
+@media (max-width: 600px) {
+  .top-row { flex-direction: column; }
+  .dates-group { justify-content: flex-start; }
 }

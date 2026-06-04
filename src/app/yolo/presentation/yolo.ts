@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnInit, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -42,6 +42,7 @@ import {
 export class YoloComponent implements OnInit {
   private readonly yoloService = inject(YoloService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected loading = signal(false);
   protected cameras = signal<YoloCamera[]>([]);
@@ -49,17 +50,24 @@ export class YoloComponent implements OnInit {
   protected stock = signal<StockResource[]>([]);
   protected audits = signal<YoloAudit[]>([]);
   protected peopleCounters = signal<PeopleCounterRecord[]>([]);
+  protected showNewCameraForm = signal(false);
 
-  protected selectedCameraId = 'cam-01';
+  protected selectedCameraId = '';
   protected selectedProductId = '';
   protected validatedQuantity = 1;
   protected imagePreview: string | null = null;
-  protected imageName = 'CAM_04_MAIN_ENTRANCE';
+  protected imageName = '';
   protected lastAudit: YoloAudit | null = null;
   protected entries = 18;
   protected exits = 11;
   protected newCameraName = '';
   protected newCameraLocation = '';
+
+  protected selectedBrowserCameraId = '';
+  protected browserCameras = signal<MediaDeviceInfo[]>([]);
+  protected cameraStream = signal<MediaStream | null>(null);
+  protected localCameraError = '';
+  protected localCameraActive = computed(() => !!this.cameraStream());
 
   protected cameraColumns = ['device', 'status', 'location', 'actions'];
   protected auditColumns = ['createdAt', 'camera', 'detections', 'status', 'actions'];
@@ -74,22 +82,44 @@ export class YoloComponent implements OnInit {
   protected capacityStatus = computed(() => this.currentPeopleInside() >= 45 ? 'Alta' : this.currentPeopleInside() >= 30 ? 'Media' : 'Normal');
   protected selectedCamera = computed(() => this.cameras().find(camera => camera.id === this.selectedCameraId) || this.cameras()[0]);
 
+  @ViewChild('webcamVideo') private webcamVideo?: ElementRef<HTMLVideoElement>;
+
+  constructor() {
+    effect(() => {
+      const stream = this.cameraStream();
+      requestAnimationFrame(() => {
+        const videoElement = this.webcamVideo?.nativeElement;
+        if (!videoElement) return;
+        videoElement.srcObject = stream;
+        if (stream) {
+          void videoElement.play().catch(() => undefined);
+        }
+      });
+    });
+  }
+
   ngOnInit(): void {
     this.loadData();
+    const onDevicesChanged = () => void this.refreshBrowserCameras();
+    navigator.mediaDevices?.addEventListener('devicechange', onDevicesChanged);
+    this.destroyRef.onDestroy(() => navigator.mediaDevices?.removeEventListener('devicechange', onDevicesChanged));
   }
 
   protected loadData(): void {
     this.loading.set(true);
     this.yoloService.getDashboardData().subscribe({
       next: data => {
-        this.cameras.set(data.cameras);
+        this.cameras.set(data.cameras || []);
         this.products.set(data.products);
         this.stock.set(data.stock);
         this.audits.set(data.audits);
         this.peopleCounters.set(data.peopleCounters);
-        this.selectedCameraId = data.cameras[0]?.id || 'cam-01';
+        if (!this.selectedCameraId || !this.cameras().some(c => c.id === this.selectedCameraId)) {
+          this.selectedCameraId = this.cameras()[0]?.id || '';
+        }
         this.selectedProductId = data.products[0]?.id || '';
         this.loading.set(false);
+        void this.refreshBrowserCameras();
       },
       error: () => {
         this.loading.set(false);
@@ -98,7 +128,166 @@ export class YoloComponent implements OnInit {
     });
   }
 
+  protected async refreshBrowserCameras(): Promise<void> {
+    await this.loadBrowserCameras();
+    this.syncBrowserCamerasToTable();
+  }
+
+  protected async loadBrowserCameras(): Promise<void> {
+    try {
+      try {
+        const dummyStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        dummyStream.getTracks().forEach(track => track.stop());
+      } catch {
+        // Permisos pendientes: igual intentamos enumerar.
+      }
+
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      this.browserCameras.set(videoDevices);
+      this.localCameraError = videoDevices.length ? '' : 'No hay cámaras de video. Conecta Iriun o habilita la webcam.';
+
+      const stillExists = videoDevices.some(device => device.deviceId === this.selectedBrowserCameraId);
+      if (!stillExists) {
+        this.selectedBrowserCameraId = videoDevices[0]?.deviceId || '';
+      }
+    } catch {
+      this.localCameraError = 'No se pudieron detectar cámaras. Revisa permisos del navegador.';
+    }
+  }
+
+  protected getDeviceLabel(device: MediaDeviceInfo): string {
+    const label = device.label?.trim();
+    if (!label) return 'Cámara (permite acceso para ver el nombre)';
+    if (/iriun/i.test(label)) return `Celular — ${label}`;
+    if (/integrated|built-?in|facetime|hd user facing|front/i.test(label)) return `Laptop — ${label}`;
+    return label;
+  }
+
+  protected getDeviceLocation(device: MediaDeviceInfo): string {
+    return /iriun/i.test(device.label || '') ? 'Celular / Iriun' : 'Laptop / Cámara local';
+  }
+
+  protected getCameraStreamLabel(camera: YoloCamera): string {
+    if (camera.streamUrl.startsWith('rtsp://')) return camera.streamUrl;
+    const device = this.browserCameras().find(item => item.deviceId === camera.streamUrl);
+    return device ? this.getDeviceLabel(device) : 'Dispositivo de video';
+  }
+
+  private syncBrowserCamerasToTable(): void {
+    for (const device of this.browserCameras()) {
+      if (this.cameras().some(camera => camera.streamUrl === device.deviceId)) continue;
+      this.yoloService.addCamera({
+        name: this.getDeviceLabel(device),
+        streamUrl: device.deviceId,
+        status: 'Online',
+        location: this.getDeviceLocation(device),
+        fps: 30
+      }).subscribe(saved => {
+        this.cameras.update(items =>
+          items.some(item => item.streamUrl === saved.streamUrl) ? items : [...items, saved]
+        );
+      });
+    }
+  }
+
+  protected async previewSelectedBrowserCamera(): Promise<void> {
+    if (!this.selectedBrowserCameraId) {
+      this.showMessage('Selecciona una cámara en la lista.');
+      return;
+    }
+
+    const device = this.browserCameras().find(item => item.deviceId === this.selectedBrowserCameraId);
+    if (!device) {
+      this.showMessage('Cámara no encontrada. Pulsa Actualizar.');
+      return;
+    }
+
+    let linked = this.cameras().find(camera => camera.streamUrl === device.deviceId);
+    if (!linked) {
+      this.syncBrowserCamerasToTable();
+      linked = this.cameras().find(camera => camera.streamUrl === device.deviceId);
+    }
+
+    if (linked) {
+      await this.activateCameraFromTable(linked);
+      return;
+    }
+
+    try {
+      const stream = await this.getVideoStream(device.deviceId);
+      this.localCameraError = '';
+      this.imagePreview = null;
+      this.attachStream(stream);
+      this.showMessage(`Vista activa: ${this.getDeviceLabel(device)}`);
+    } catch {
+      this.localCameraError = 'No se pudo abrir la cámara seleccionada.';
+      this.stopCameraStream();
+      this.showMessage(this.localCameraError);
+    }
+  }
+
+  protected async activateLocalCamera(): Promise<void> {
+    await this.previewSelectedBrowserCamera();
+  }
+
+  protected deactivateLocalCamera(): void {
+    this.deactivateActiveCamera();
+  }
+
+  protected isCameraStreaming(camera: YoloCamera): boolean {
+    return this.selectedCameraId === camera.id && !!this.cameraStream();
+  }
+
+  protected deactivateCamera(camera: YoloCamera, event?: Event): void {
+    event?.stopPropagation();
+    if (this.selectedCameraId !== camera.id || !this.cameraStream()) return;
+    this.stopCameraStream();
+    this.updateCameraStatus(camera, 'Offline', 0);
+    this.showMessage(`Cámara apagada: ${camera.name}`);
+  }
+
+  protected deactivateActiveCamera(): void {
+    const camera = this.cameras().find(item => item.id === this.selectedCameraId);
+    this.stopCameraStream();
+    if (camera) {
+      this.updateCameraStatus(camera, 'Offline', 0);
+      this.showMessage(`Vista apagada: ${camera.name}`);
+    } else {
+      this.showMessage('Vista de cámara apagada.');
+    }
+  }
+
+  private updateCameraStatus(camera: YoloCamera, status: YoloCamera['status'], fps: number): void {
+    const updated: YoloCamera = { ...camera, status, fps, lastDetectionAt: new Date().toISOString() };
+    this.yoloService.updateCamera(updated).subscribe(saved => {
+      this.cameras.update(items => items.map(item => item.id === saved.id ? saved : item));
+    });
+  }
+
+  protected async linkLocalCamera(): Promise<void> {
+    this.syncBrowserCamerasToTable();
+    await this.previewSelectedBrowserCamera();
+    this.showMessage('Cámara vinculada y lista en la tabla.');
+  }
+
+  private attachStream(stream: MediaStream): void {
+    this.stopCameraStream();
+    this.cameraStream.set(stream);
+  }
+
+  private stopCameraStream(): void {
+    const stream = this.cameraStream();
+    if (!stream) return;
+    stream.getTracks().forEach(track => track.stop());
+    this.cameraStream.set(null);
+  }
+
   protected addCamera(): void {
+    this.showNewCameraForm.set(!this.showNewCameraForm());
+  }
+
+  protected saveNewCamera(): void {
     const name = this.newCameraName.trim() || `Cámara ${this.cameras().length + 1}`;
     const location = this.newCameraLocation.trim() || 'Nueva ubicación';
     this.yoloService.addCamera({
@@ -112,8 +301,68 @@ export class YoloComponent implements OnInit {
       this.selectedCameraId = camera.id;
       this.newCameraName = '';
       this.newCameraLocation = '';
+      this.showNewCameraForm.set(false);
       this.showMessage('Nueva cámara agregada.');
     });
+  }
+
+  protected deleteCamera(camera: YoloCamera, event?: Event): void {
+    event?.stopPropagation();
+    if (!confirm(`¿Eliminar cámara "${camera.name}"?`)) return;
+    this.yoloService.deleteCamera(camera.id).subscribe(() => {
+      this.cameras.update(items => items.filter(item => item.id !== camera.id));
+      if (this.selectedCameraId === camera.id) {
+        this.stopCameraStream();
+        this.selectedCameraId = this.cameras()[0]?.id || '';
+      }
+      this.showMessage('Cámara eliminada.');
+    });
+  }
+
+  protected async activateCameraFromTable(camera: YoloCamera, event?: Event): Promise<void> {
+    event?.stopPropagation();
+    this.selectedCameraId = camera.id;
+    this.imagePreview = null;
+    await this.startStreamForCamera(camera);
+  }
+
+  private isBrowserCamera(camera: YoloCamera): boolean {
+    return !camera.streamUrl.startsWith('rtsp://');
+  }
+
+  private async getVideoStream(deviceId: string): Promise<MediaStream> {
+    try {
+      return await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { exact: deviceId } }
+      });
+    } catch {
+      return await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { ideal: deviceId } }
+      });
+    }
+  }
+
+  private async startStreamForCamera(camera: YoloCamera): Promise<void> {
+    try {
+      this.localCameraError = '';
+      const stream = this.isBrowserCamera(camera)
+        ? await this.getVideoStream(camera.streamUrl)
+        : await navigator.mediaDevices.getUserMedia({ video: true });
+      this.attachStream(stream);
+      if (this.isBrowserCamera(camera)) {
+        this.selectedBrowserCameraId = camera.streamUrl;
+      }
+      this.updateCameraStatus(camera, 'Online', camera.fps || 30);
+      if (!this.isBrowserCamera(camera)) {
+        this.showMessage(`Vista previa con webcam. "${camera.name}" usa RTSP y no se reproduce directamente en el navegador.`);
+      } else {
+        this.showMessage(`Cámara activa: ${camera.name}`);
+      }
+    } catch {
+      this.localCameraError = 'No se pudo iniciar el video. Revisa permisos de cámara del navegador.';
+      this.stopCameraStream();
+      this.showMessage(this.localCameraError);
+    }
   }
 
   protected testConnection(camera: YoloCamera): void {

@@ -220,12 +220,74 @@
 .status.offline { color: #e05252; }
 .status.offline::before { background: #e05252; }
 
+.camera-table .mat-column-actions,
+.camera-table .mat-mdc-header-cell.mat-column-actions,
+.camera-table .mat-mdc-cell.mat-column-actions {
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+  padding-right: 12px !important;
+}
+
+.camera-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
 .mini-action {
   height: 28px !important;
+  min-height: 28px !important;
   padding: 0 10px !important;
   font-size: 0.72rem !important;
+  line-height: 28px !important;
   color: var(--color-primary) !important;
   border-color: #ffdca6 !important;
+  flex-shrink: 0;
+}
+
+.mini-action.off-btn {
+  color: #5c6b7a !important;
+  border-color: #c5d0db !important;
+}
+
+.mini-action.off-btn:not([disabled]) {
+  color: #24313f !important;
+  border-color: #9eb0c2 !important;
+}
+
+.camera-actions .icon-action.delete-btn {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  flex-shrink: 0;
+  color: #e05252 !important;
+  border: 1px solid #f0b4b4;
+  border-radius: 4px;
+  background: #fff5f5;
+}
+
+.camera-actions .icon-action.delete-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.video-off-btn {
+  margin-left: 8px;
+  height: 30px !important;
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  font-size: 0.72rem !important;
+}
+
+.video-off-btn mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
 }
 
 .selected-row {
@@ -241,11 +303,23 @@
 
 .new-camera-form {
   padding: 16px 18px 4px;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .new-camera-form mat-form-field {
   flex: 1;
   min-width: 180px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.form-actions button {
+  flex: 1;
 }
 
 .validation-card, .people-card, .history-card {
@@ -355,12 +429,102 @@
   background: radial-gradient(circle at 40% 30%, #596777, #1a2632 65%, #0f1720);
 }
 
-.video-frame img {
+.video-frame img,
+.video-frame video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   opacity: 0.86;
   filter: saturate(0.9) contrast(0.9);
+}
+
+.camera-error {
+  margin-top: 12px;
+  color: #ffb4b4;
+  font-size: 0.85rem;
+}
+
+.camera-status {
+  margin-top: 12px;
+  color: #c7d4e4;
+  font-size: 0.85rem;
+}
+
+.local-action {
+  margin-top: 22px;
+}
+
+.local-camera-section {
+  padding: 16px 18px 20px;
+  border-top: 1px solid #e8edf2;
+}
+
+.local-camera-section h3 {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #1f2d3d;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.local-camera-hint {
+  margin: 0 0 12px;
+  color: #6b7785;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.camera-picker {
+  width: 100%;
+}
+
+.local-camera-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.local-camera-actions button mat-icon {
+  margin-right: 4px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.retry-camera-btn {
+  margin-top: 10px;
+}
+
+.video-header {
+  flex-wrap: wrap;
+}
+
+.video-camera-select {
+  margin-left: auto;
+  min-width: 180px;
+  max-width: 260px;
+  font-size: 0.72rem;
+}
+
+.video-camera-select ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.video-camera-select ::ng-deep .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+.video-camera-select ::ng-deep .mat-mdc-select-value,
+.video-camera-select ::ng-deep .mat-mdc-select-arrow {
+  color: #fff;
+}
+
+.live-dot.live-on {
+  background: #1fdb72;
+  box-shadow: 0 0 0 3px rgba(31, 219, 114, 0.25);
 }
 
 .fake-scene {

@@ -77,7 +77,7 @@ export class YoloService {
 
   getDashboardData(): Observable<YoloDashboardData> {
     return forkJoin({
-      cameras: this.getCollection<YoloCamera>('yoloCameras', this.getDefaultCameras()),
+      cameras: this.getCollection<YoloCamera>('yoloCameras', this.mergeLegacyLocalCameras()),
       products: this.getCollection<ProductResource>('products', []),
       stock: this.getCollection<StockResource>('stock', []),
       audits: this.getCollection<YoloAudit>('yoloAudits', this.getLocalAudits()),
@@ -99,6 +99,15 @@ export class YoloService {
   updateCamera(camera: YoloCamera): Observable<YoloCamera> {
     return this.http.put<YoloCamera>(`${this.baseUrl}/yoloCameras/${camera.id}`, camera).pipe(
       catchError(() => of(this.saveLocalCamera(camera)))
+    );
+  }
+
+  deleteCamera(cameraId: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/yoloCameras/${cameraId}`).pipe(
+      catchError(() => of(void 0)),
+      map(() => {
+        this.removeCameraFromLocal(cameraId);
+      })
     );
   }
 
@@ -164,8 +173,8 @@ export class YoloService {
   }
 
   private getDefaultCameras(): YoloCamera[] {
-    const saved = this.readLocal<YoloCamera[]>(this.localKeys.cameras, []);
-    if (saved.length) return saved;
+    const saved = this.getPersistedCameras();
+    if (saved !== null) return saved;
     return [
       {
         id: 'cam-01',
@@ -192,8 +201,59 @@ export class YoloService {
     const cameras = this.getDefaultCameras();
     const exists = cameras.some(item => item.id === camera.id);
     const updated = exists ? cameras.map(item => item.id === camera.id ? camera : item) : [...cameras, camera];
-    localStorage.setItem(this.localKeys.cameras, JSON.stringify(updated));
+    this.persistCameras(updated);
     return camera;
+  }
+
+  private removeCameraFromLocal(cameraId: string): void {
+    const cameras = this.getDefaultCameras().filter(item => item.id !== cameraId);
+    this.persistCameras(cameras);
+    const legacyKey = 'flowtrack_local_cameras';
+    const legacy = this.readLocal<YoloCamera[]>(legacyKey, []).filter(item => item.id !== cameraId);
+    localStorage.setItem(legacyKey, JSON.stringify(legacy));
+  }
+
+  private getPersistedCameras(): YoloCamera[] | null {
+    try {
+      const value = localStorage.getItem(this.localKeys.cameras);
+      if (value === null) return null;
+      const parsed = JSON.parse(value) as YoloCamera[];
+      return Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private persistCameras(cameras: YoloCamera[]): void {
+    localStorage.setItem(this.localKeys.cameras, JSON.stringify(cameras));
+  }
+
+  mergeLegacyLocalCameras(): YoloCamera[] {
+    const legacyKey = 'flowtrack_local_cameras';
+    const legacy = this.readLocal<YoloCamera[]>(legacyKey, []);
+    const current = this.getDefaultCameras();
+    const merged = [...current];
+    for (const camera of legacy) {
+      if (!merged.some(item => item.streamUrl === camera.streamUrl)) {
+        merged.push(camera);
+      }
+    }
+    const deduped = this.dedupeCameras(merged);
+    if (legacy.length || deduped.length !== current.length) {
+      this.persistCameras(deduped);
+    }
+    localStorage.removeItem(legacyKey);
+    return deduped;
+  }
+
+  private dedupeCameras(cameras: YoloCamera[]): YoloCamera[] {
+    const seen = new Set<string>();
+    return cameras.filter(camera => {
+      const key = camera.streamUrl || camera.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }
 
   private getLocalAudits(): YoloAudit[] {

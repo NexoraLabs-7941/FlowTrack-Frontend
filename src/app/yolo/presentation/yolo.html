@@ -50,7 +50,7 @@
                 <span class="device-icon" [class.offline]="camera.status === 'Offline'"><mat-icon>videocam</mat-icon></span>
                 <div>
                   <strong>{{ camera.name }}</strong>
-                  <small>{{ camera.streamUrl }} · {{ camera.fps }} fps</small>
+                  <small>{{ getCameraStreamLabel(camera) }} · {{ camera.fps }} fps</small>
                 </div>
               </div>
             </td>
@@ -73,94 +73,99 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>ACCIONES</th>
             <td mat-cell *matCellDef="let camera">
-              @if (camera.status === 'Online') {
-                <button mat-stroked-button class="mini-action" (click)="testConnection(camera)">Probar Conexión</button>
-              } @else {
-                <button mat-stroked-button class="mini-action" (click)="restartCamera(camera)">Reiniciar</button>
-              }
+              <div class="camera-actions">
+                <button mat-stroked-button class="mini-action" type="button" (click)="activateCameraFromTable(camera, $event)">Activar</button>
+                <button mat-stroked-button class="mini-action off-btn" type="button"
+                        [disabled]="selectedCameraId !== camera.id || !cameraStream()"
+                        (click)="deactivateCamera(camera, $event)">Apagar</button>
+                <button mat-icon-button class="icon-action delete-btn" type="button"
+                        aria-label="Eliminar cámara"
+                        (click)="deleteCamera(camera, $event)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
             </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="cameraColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: cameraColumns;" [class.selected-row]="row.id === selectedCameraId" (click)="selectedCameraId = row.id"></tr>
+          <tr mat-row *matRowDef="let row; columns: cameraColumns;" [class.selected-row]="row.id === selectedCameraId" (click)="activateCameraFromTable(row)"></tr>
         </table>
 
-        <div class="new-camera-form">
-          <mat-form-field appearance="outline">
-            <mat-label>Nombre</mat-label>
-            <input matInput [(ngModel)]="newCameraName" placeholder="Cámara góndola 2">
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Ubicación</mat-label>
-            <input matInput [(ngModel)]="newCameraLocation" placeholder="Pasillo bebidas">
-          </mat-form-field>
-        </div>
-      </mat-card>
-
-      <mat-card class="validation-card">
-        <h2>Validación del conteo YOLO</h2>
-        <p>La IA propone cantidades, pero el usuario valida antes de actualizar el inventario.</p>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Cámara</mat-label>
-            <mat-select [(ngModel)]="selectedCameraId">
-              @for (camera of cameras(); track camera.id) {
-                <mat-option [value]="camera.id">{{ camera.name }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Producto principal</mat-label>
-            <mat-select [(ngModel)]="selectedProductId">
-              @for (product of products(); track product.id) {
-                <mat-option [value]="product.id">{{ product.name }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="quantity-field">
-            <mat-label>Cantidad</mat-label>
-            <input matInput type="number" min="1" [(ngModel)]="validatedQuantity">
-          </mat-form-field>
-        </div>
-
-        <div class="actions-row">
-          <label class="upload-btn">
-            <input type="file" accept="image/*" (change)="onImageSelected($event)">
-            <mat-icon>upload</mat-icon>
-            Cargar imagen
-          </label>
-          <button mat-stroked-button (click)="runYoloAssistant()"><mat-icon>center_focus_strong</mat-icon>Simular detección</button>
-          <button mat-flat-button color="primary" [disabled]="!lastAudit" (click)="saveAuditDraft()"><mat-icon>save</mat-icon>Guardar pendiente</button>
-          <button mat-flat-button color="accent" [disabled]="!lastAudit" (click)="validateAudit()"><mat-icon>verified</mat-icon>Validar y actualizar stock</button>
-        </div>
-
-        @if (lastAudit) {
-          <div class="detections-list">
-            @for (detection of lastAudit.detections; track detection.id) {
-              <div class="detection-item">
-                <div>
-                  <strong>{{ detection.productName }}</strong>
-                  <span>{{ detection.confidence * 100 | number:'1.0-0' }}% confianza</span>
-                </div>
-                <input type="number" min="0" [ngModel]="detection.quantity" (ngModelChange)="updateDetectionQuantity(detection, $event)">
+        <div class="local-camera-section">
+          @if (showNewCameraForm()) {
+            <h3>Agregar Nueva Cámara</h3>
+            <div class="new-camera-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput [(ngModel)]="newCameraName" placeholder="Cámara góndola 2">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Ubicación</mat-label>
+                <input matInput [(ngModel)]="newCameraLocation" placeholder="Pasillo bebidas">
+              </mat-form-field>
+              <div class="form-actions">
+                <button mat-flat-button color="primary" (click)="saveNewCamera()">Guardar Cámara</button>
+                <button mat-stroked-button (click)="showNewCameraForm.set(false)">Cancelar</button>
               </div>
+            </div>
+          } @else {
+            <h3>Cámaras del sistema (laptop / Iriun)</h3>
+            @if (browserCameras().length) {
+              <mat-form-field appearance="outline" class="camera-picker">
+                <mat-label>Cámara para vista previa</mat-label>
+                <mat-select [(ngModel)]="selectedBrowserCameraId">
+                  @for (device of browserCameras(); track device.deviceId) {
+                    <mat-option [value]="device.deviceId">{{ getDeviceLabel(device) }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <div class="local-camera-actions">
+                <button mat-stroked-button type="button" (click)="refreshBrowserCameras()">
+                  <mat-icon>refresh</mat-icon>
+                  Actualizar
+                </button>
+                <button mat-flat-button color="primary" type="button" (click)="previewSelectedBrowserCamera()">
+                  <mat-icon>play_arrow</mat-icon>
+                  Ver en pantalla
+                </button>
+              </div>
+            } @else {
+              <div class="camera-status">{{ localCameraError || 'No se detectaron cámaras. Permite el acceso a la cámara y conecta Iriun.' }}</div>
+              <button mat-stroked-button type="button" class="retry-camera-btn" (click)="refreshBrowserCameras()">Reintentar detección</button>
             }
-          </div>
-        }
+            @if (localCameraError && browserCameras().length) {
+              <div class="camera-status">{{ localCameraError }}</div>
+            }
+          }
+        </div>
       </mat-card>
     </section>
 
     <section class="right-column">
       <mat-card class="video-card">
         <div class="video-header">
-          <span class="live-dot"></span>
-          <strong>{{ selectedCamera()?.name || 'CAM_04_MAIN_ENTRANCE' }}</strong>
+          <span class="live-dot" [class.live-on]="cameraStream()"></span>
+          <strong>{{ selectedCamera().name || 'Sin cámara seleccionada' }}</strong>
+          @if (browserCameras().length > 1) {
+            <mat-form-field appearance="outline" class="video-camera-select">
+              <mat-select [(ngModel)]="selectedBrowserCameraId" (selectionChange)="previewSelectedBrowserCamera()">
+                @for (device of browserCameras(); track device.deviceId) {
+                  <mat-option [value]="device.deviceId">{{ getDeviceLabel(device) }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+          @if (cameraStream()) {
+            <button mat-stroked-button class="video-off-btn" type="button" (click)="deactivateActiveCamera()">
+              <mat-icon>videocam_off</mat-icon>
+              Apagar
+            </button>
+          }
         </div>
         <div class="video-frame">
-          @if (imagePreview) {
+          @if (cameraStream()) {
+            <video #webcamVideo autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+          } @else if (imagePreview) {
             <img [src]="imagePreview" alt="Imagen analizada por YOLO">
           } @else {
             <div class="fake-scene">
@@ -182,11 +187,11 @@
               </div>
             }
           } @else {
-            <div class="box product-box" style="left: 30%; top: 34%; width: 12%; height: 28%;"><span>stock 88%</span></div>
-            <div class="box warning-box" style="left: 64%; top: 45%; width: 13%; height: 33%;"><span>low 72%</span></div>
+            <div class="no-audit-overlay">
+              <p>Aún no se han realizado auditorías visuales.</p>
+            </div>
           }
 
-          <div class="box person-box" style="left: 15%; top: 42%; width: 9%; height: 24%;"><span>person 94%</span></div>
           <div class="video-tools"><mat-icon>zoom_in</mat-icon><mat-icon>fullscreen</mat-icon><mat-icon>linked_camera</mat-icon></div>
         </div>
       </mat-card>

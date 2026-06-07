@@ -76,7 +76,7 @@
               <div class="camera-actions">
                 <button mat-stroked-button class="mini-action" type="button" (click)="activateCameraFromTable(camera, $event)">Activar</button>
                 <button mat-stroked-button class="mini-action off-btn" type="button"
-                        [disabled]="selectedCameraId !== camera.id || !cameraStream()"
+                        [disabled]="selectedCameraId !== camera.id || !isVideoPlaying()"
                         (click)="deactivateCamera(camera, $event)">Apagar</button>
                 <button mat-icon-button class="icon-action delete-btn" type="button"
                         aria-label="Eliminar cámara"
@@ -144,7 +144,7 @@
     <section class="right-column">
       <mat-card class="video-card">
         <div class="video-header">
-          <span class="live-dot" [class.live-on]="cameraStream()"></span>
+          <span class="live-dot" [class.live-on]="isVideoPlaying()"></span>
           <strong>{{ selectedCamera().name || 'Sin cámara seleccionada' }}</strong>
           @if (browserCameras().length > 1) {
             <mat-form-field appearance="outline" class="video-camera-select">
@@ -155,7 +155,7 @@
               </mat-select>
             </mat-form-field>
           }
-          @if (cameraStream()) {
+          @if (isVideoPlaying()) {
             <button mat-stroked-button class="video-off-btn" type="button" (click)="deactivateActiveCamera()">
               <mat-icon>videocam_off</mat-icon>
               Apagar
@@ -163,8 +163,11 @@
           }
         </div>
         <div class="video-frame">
-          @if (cameraStream()) {
-            <video #webcamVideo autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+          @if (isVideoPlaying() || activatingCamera()) {
+            <video #webcamVideo autoplay muted playsinline controls style="width: 100%; height: 100%; object-fit: cover;"></video>
+            @if (activatingCamera()) {
+              <div class="stream-loading">Conectando con Edge Vision...</div>
+            }
           } @else if (imagePreview) {
             <img [src]="imagePreview" alt="Imagen analizada por YOLO">
           } @else {

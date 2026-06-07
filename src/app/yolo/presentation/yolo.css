@@ -438,6 +438,19 @@
   filter: saturate(0.9) contrast(0.9);
 }
 
+.stream-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 32, 0.72);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 2;
+}
+
 .camera-error {
   margin-top: 12px;
   color: #ffb4b4;

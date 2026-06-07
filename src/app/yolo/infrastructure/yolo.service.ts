@@ -11,6 +11,13 @@ export interface YoloCamera {
   location: string;
   fps: number;
   lastDetectionAt: string;
+  aforoCameraId?: number;
+}
+
+export interface AforoCameraActivationResponse {
+  status: string;
+  message: string;
+  stream_url: string;
 }
 
 export interface YoloProductDetection {
@@ -110,6 +117,24 @@ export class YoloService {
       })
     );
   }
+  activateAforoCamera(idCamara: number, cameraLabel?: string): Observable<AforoCameraActivationResponse> {
+    const baseUrl = environment.aforoApiBaseUrl;
+    const path = environment.aforoEncenderEndpointPath;
+
+    const token = localStorage.getItem('token');
+
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    };
+
+    const params = cameraLabel ? { cameraLabel } : undefined;
+
+    return this.http.post<AforoCameraActivationResponse>(
+      `${baseUrl}${path}/${idCamara}`,
+      {},
+      { headers, params }
+    );
+  }
 
   saveAudit(audit: YoloAudit): Observable<YoloAudit> {
     return this.http.post<YoloAudit>(`${this.baseUrl}/yoloAudits`, audit).pipe(
@@ -183,6 +208,7 @@ export class YoloService {
         status: 'Online',
         location: 'Almacén Norte',
         fps: 30,
+        aforoCameraId: 0,
         lastDetectionAt: new Date().toISOString()
       },
       {
@@ -192,6 +218,7 @@ export class YoloService {
         status: 'Offline',
         location: 'Pasillo Central',
         fps: 0,
+        aforoCameraId: 1,
         lastDetectionAt: new Date(Date.now() - 3600000).toISOString()
       }
     ];

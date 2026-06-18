@@ -91,12 +91,17 @@ export class YoloComponent implements OnInit {
     const recordsTotal = this.peopleCounters().reduce((sum, item) => sum + Number(item.entries || 0), 0);
     return 1284 + recordsTotal + Math.max(0, Number(this.entries() || 0));
   });
-  protected selectedCamera = computed(() => this.cameras().find(camera => camera.id === this.selectedCameraId) || this.cameras()[0]);
+  protected selectedCamera = computed<YoloCamera | undefined>(() =>
+    this.cameras().find(camera => camera.id === this.selectedCameraId) || this.cameras()[0]
+  );
 
   @ViewChild('webcamVideo') private webcamVideo?: ElementRef<HTMLVideoElement>;
 
   constructor() {
-    this.destroyRef.onDestroy(() => this.stopHlsPlayback());
+    this.destroyRef.onDestroy(() => {
+      this.stopAfluenciaRefresh();
+      this.stopHlsPlayback();
+    });
   }
 
   ngOnInit(): void {
@@ -125,6 +130,7 @@ export class YoloComponent implements OnInit {
         if (!this.selectedCameraId || !this.cameras().some(c => c.id === this.selectedCameraId)) {
           this.selectedCameraId = this.cameras()[0]?.id || '';
         }
+        this.startSelectedAfluenciaRefresh();
         this.selectedProductId = data.products[0]?.id || '';
         this.loading.set(false);
         void this.refreshBrowserCameras();
@@ -134,6 +140,7 @@ export class YoloComponent implements OnInit {
         // 🔥 Contingencia: Incluso si da error el json-server, te montamos las cámaras para tu sustentación
         this.cameras.set(this.yoloService['getDefaultCameras']());
         this.selectedCameraId = this.cameras()[0]?.id || '';
+        this.startSelectedAfluenciaRefresh();
         this.showMessage('Cargando cámaras en modo local de contingencia.');
         void this.refreshBrowserCameras();
       }
@@ -303,8 +310,8 @@ export class YoloComponent implements OnInit {
     return this.selectedCameraId === camera.id && this.isVideoPlaying();
   }
 
-  protected canTurnOffCamera(camera: YoloCamera): boolean {
-    return camera.status === 'Online' || this.isCameraStreaming(camera);
+  protected canTurnOffCamera(camera?: YoloCamera): boolean {
+    return !!camera && (camera.status === 'Online' || this.isCameraStreaming(camera));
   }
 
   protected async deactivateCamera(camera: YoloCamera, event?: Event): Promise<void> {
@@ -400,25 +407,36 @@ export class YoloComponent implements OnInit {
   }
 
   protected refreshSelectedAfluencia(): void {
+    this.startSelectedAfluenciaRefresh();
+  }
+
+  private startSelectedAfluenciaRefresh(): void {
     const camera = this.selectedCamera();
     if (!camera) {
+      this.stopAfluenciaRefresh();
       this.applyAfluenciaCount(0);
       return;
     }
 
-    this.refreshAfluencia(this.getAforoCameraId(camera));
+    this.startAfluenciaRefresh(this.getAforoCameraId(camera));
   }
 
   private startAfluenciaRefresh(idCamara: number): void {
-    if (this.afluenciaIntervalId) clearInterval(this.afluenciaIntervalId);
+    this.stopAfluenciaRefresh();
     this.refreshAfluencia(idCamara);
     this.afluenciaIntervalId = setInterval(() => this.refreshAfluencia(idCamara), 2500);
   }
 
+  private stopAfluenciaRefresh(): void {
+    if (!this.afluenciaIntervalId) return;
+    clearInterval(this.afluenciaIntervalId);
+    this.afluenciaIntervalId = null;
+  }
+
   private applyAfluenciaCount(count: number): void {
-  this.entries.set(Math.max(0, Number(count) || 0));
-  this.exits.set(0);
-  this.cdr.detectChanges();
+    this.entries.set(Math.max(0, Number(count) || 0));
+    this.exits.set(0);
+    this.cdr.detectChanges();
   }
 
   private async playHlsStreamWithRetry(url: string, maxAttempts = 24, delayMs = 2500): Promise<void> {
@@ -496,11 +514,6 @@ export class YoloComponent implements OnInit {
   }
 
   private stopHlsPlayback(): void {
-    if (this.afluenciaIntervalId) {
-      clearInterval(this.afluenciaIntervalId);
-      this.afluenciaIntervalId = null;
-    }
-
     this.hlsPlayer?.destroy();
     this.hlsPlayer = null;
     this.activeHlsUrl.set(null);
@@ -582,8 +595,10 @@ export class YoloComponent implements OnInit {
     this.yoloService.deleteCamera(camera).subscribe(() => {
       this.cameras.update(items => items.filter(item => item.id !== camera.id));
       if (this.selectedCameraId === camera.id) {
+        this.stopAfluenciaRefresh();
         this.stopHlsPlayback();
         this.selectedCameraId = this.cameras()[0]?.id || '';
+        this.startSelectedAfluenciaRefresh();
       }
       this.showMessage('Cámara eliminada del listado.');
     });
@@ -593,6 +608,7 @@ export class YoloComponent implements OnInit {
     event?.stopPropagation();
     this.selectedCameraId = camera.id;
     this.imagePreview = null;
+    this.startAfluenciaRefresh(this.getAforoCameraId(camera));
     await this.startStreamForCamera(camera);
   }
 

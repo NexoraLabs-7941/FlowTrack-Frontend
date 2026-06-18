@@ -42,6 +42,16 @@ export class YoloDetection {
     });
   }
 
+  withDetectedQuantity(qty: number): YoloDetection {
+    return new YoloDetection({
+      productId: this._productId,
+      productName: this._productName,
+      currentStock: this._currentStock,
+      detectedQuantity: qty,
+      validatedQuantity: qty
+    });
+  }
+
   toRestockingItem(): { productId: string; quantityToAdd: number } {
     return {
       productId: this._productId,

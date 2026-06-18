@@ -14,6 +14,7 @@ export const environment = {
   aforoApiBaseUrl: API_BASE_URL,
   aforoEncenderEndpointPath: '/aforo/encender',
   aforoApagarEndpointPath: '/aforo/apagar',
+  restockDetectionEndpointPath: '/inventario/deteccion',
   platformProviderProductsEndpointPath: '/products',
   platformProviderProvidersEndpointPath: '/providers',
   platformProviderBatchesEndpointPath: '/batches',

@@ -74,7 +74,6 @@
   width: 100%;
 }
 
-/* Panel imagen */
 .yolo-image-panel {
   display: flex;
   flex-direction: column;
@@ -83,14 +82,17 @@
   flex-shrink: 0;
 }
 
-.image-preview {
+.image-preview,
+.camera-preview {
   position: relative;
   border-radius: 14px;
   overflow: hidden;
   background: #1a1a1a;
   box-shadow: 0 2px 12px rgba(0,0,0,0.15);
 }
-.image-preview img {
+
+.image-preview img,
+.camera-preview video {
   width: 100%;
   height: 35vw;
   max-height: 420px;
@@ -109,6 +111,94 @@
   padding: 4px 12px;
   border-radius: 20px;
   letter-spacing: 0.03em;
+}
+
+.detected-badge {
+  background: rgba(34, 197, 94, 0.92);
+}
+
+.camera-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-camera,
+.btn-capture,
+.btn-stop {
+  flex: 1;
+  min-width: 110px;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-camera {
+  background: #f97316;
+  color: white;
+}
+.btn-camera:hover:not(:disabled) { background: #ea580c; }
+
+.btn-capture {
+  background: #22c55e;
+  color: white;
+}
+.btn-capture:hover:not(:disabled) { background: #16a34a; }
+
+.btn-stop {
+  background: #6b7280;
+  color: white;
+}
+.btn-stop:hover { background: #4b5563; }
+
+.btn-camera:disabled,
+.btn-capture:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-upload.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.product-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.product-selector label {
+  font-size: 0.85rem;
+  color: #555;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.product-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.camera-error,
+.detection-error {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #dc2626;
+}
+
+.empty-row {
+  text-align: center;
+  color: #888;
+  padding: 24px 18px !important;
+  font-size: 0.88rem;
 }
 
 .image-placeholder {
@@ -143,7 +233,6 @@
 }
 .btn-upload:hover { background: #d1d5db; }
 
-/* Panel tabla */
 .yolo-table-panel {
   flex: 1;
   min-width: 0;
@@ -164,15 +253,6 @@
   font-weight: 700;
   font-size: 1rem;
 }
-
-.filter-label {
-  font-size: 0.78rem;
-  font-weight: 500;
-  opacity: 0.75;
-  cursor: pointer;
-  letter-spacing: 0.03em;
-}
-.filter-label:hover { opacity: 1; }
 
 .validation-table {
   width: 100%;
@@ -292,6 +372,7 @@
   .yolo-layout { flex-direction: column; }
   .yolo-image-panel { width: 100%; }
   .image-preview img,
+  .camera-preview video,
   .image-placeholder { height: 60vw; max-height: none; }
   .top-row { flex-direction: column; align-items: flex-start; gap: 16px; }
 }

@@ -13,6 +13,7 @@ export const environment = {
   platformProviderApiBaseUrl: API_BASE_URL,
   aforoApiBaseUrl: API_BASE_URL,
   aforoEncenderEndpointPath: '/aforo/encender',
+  aforoApagarEndpointPath: '/aforo/apagar',
   platformProviderProductsEndpointPath: '/products',
   platformProviderProvidersEndpointPath: '/providers',
   platformProviderBatchesEndpointPath: '/batches',

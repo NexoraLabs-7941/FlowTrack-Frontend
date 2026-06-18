@@ -20,6 +20,11 @@ export interface AforoCameraActivationResponse {
   stream_url: string;
 }
 
+export interface AforoCameraDeactivationResponse {
+  status: string;
+  message: string;
+}
+
 export interface YoloProductDetection {
   id: string;
   productId: string;
@@ -79,12 +84,15 @@ export class YoloService {
   private readonly localKeys = {
     cameras: 'flowtrack_yolo_cameras',
     audits: 'flowtrack_yolo_audits',
-    people: 'flowtrack_yolo_people'
+    people: 'flowtrack_yolo_people',
+    hiddenCameras: 'flowtrack_yolo_hidden_cameras'
   };
 
   getDashboardData(): Observable<YoloDashboardData> {
     return forkJoin({
-      cameras: this.getCollection<YoloCamera>('yoloCameras', this.mergeLegacyLocalCameras()),
+      cameras: this.getCollection<YoloCamera>('yoloCameras', this.mergeLegacyLocalCameras()).pipe(
+        map(cameras => this.filterVisibleCameras(cameras))
+      ),
       products: this.getCollection<ProductResource>('products', []),
       stock: this.getCollection<StockResource>('stock', []),
       audits: this.getCollection<YoloAudit>('yoloAudits', this.getLocalAudits()),
@@ -98,6 +106,7 @@ export class YoloService {
       id: `cam-${Date.now()}`,
       lastDetectionAt: new Date().toISOString()
     };
+    this.showCamera(newCamera);
     return this.http.post<YoloCamera>(`${this.baseUrl}/yoloCameras`, newCamera).pipe(
       catchError(() => of(this.saveLocalCamera(newCamera)))
     );
@@ -109,14 +118,21 @@ export class YoloService {
     );
   }
 
-  deleteCamera(cameraId: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/yoloCameras/${cameraId}`).pipe(
+  deleteCamera(camera: YoloCamera): Observable<void> {
+    this.hideCamera(camera);
+    return this.http.delete<void>(`${this.baseUrl}/yoloCameras/${camera.id}`).pipe(
       catchError(() => of(void 0)),
       map(() => {
-        this.removeCameraFromLocal(cameraId);
+        this.removeCameraFromLocal(camera.id);
       })
     );
   }
+
+  isCameraHidden(camera: Pick<YoloCamera, 'id' | 'streamUrl'>): boolean {
+    const hidden = this.readLocal<string[]>(this.localKeys.hiddenCameras, []);
+    return hidden.includes(camera.id) || hidden.includes(camera.streamUrl);
+  }
+
   activateAforoCamera(idCamara: number, cameraLabel?: string): Observable<AforoCameraActivationResponse> {
     const baseUrl = environment.aforoApiBaseUrl;
     const path = environment.aforoEncenderEndpointPath;
@@ -134,6 +150,26 @@ export class YoloService {
       {},
       { headers, params }
     );
+  }
+
+  getAfluenciaCount(idCamara: number): Observable<number> {
+    const baseUrl = environment.aforoApiBaseUrl;
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+
+    return this.http.get<unknown>(`${baseUrl}/afluencia/${idCamara}`, { headers }).pipe(
+      map(response => this.normalizeAfluenciaCount(response)),
+      catchError(() => of(0))
+    );
+  }
+
+  deactivateAforoCamera(): Observable<AforoCameraDeactivationResponse> {
+    const baseUrl = environment.aforoApiBaseUrl;
+    const path = environment.aforoApagarEndpointPath;
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+
+    return this.http.post<AforoCameraDeactivationResponse>(`${baseUrl}${path}`, {}, { headers });
   }
 
   saveAudit(audit: YoloAudit): Observable<YoloAudit> {
@@ -199,8 +235,7 @@ export class YoloService {
 
   private getDefaultCameras(): YoloCamera[] {
     const saved = this.getPersistedCameras();
-    if (saved !== null) return saved;
-    return [
+    const defaults: YoloCamera[] = saved !== null ? saved : [
       {
         id: 'cam-01',
         name: 'Cámara Pasillo 1',
@@ -222,6 +257,7 @@ export class YoloService {
         lastDetectionAt: new Date(Date.now() - 3600000).toISOString()
       }
     ];
+    return this.filterVisibleCameras(defaults);
   }
 
   private saveLocalCamera(camera: YoloCamera): YoloCamera {
@@ -261,16 +297,33 @@ export class YoloService {
     const current = this.getDefaultCameras();
     const merged = [...current];
     for (const camera of legacy) {
-      if (!merged.some(item => item.streamUrl === camera.streamUrl)) {
+      if (!merged.some(item => item.streamUrl === camera.streamUrl) && !this.isCameraHidden(camera)) {
         merged.push(camera);
       }
     }
-    const deduped = this.dedupeCameras(merged);
+    const deduped = this.filterVisibleCameras(this.dedupeCameras(merged));
     if (legacy.length || deduped.length !== current.length) {
       this.persistCameras(deduped);
     }
     localStorage.removeItem(legacyKey);
     return deduped;
+  }
+
+  private hideCamera(camera: YoloCamera): void {
+    const hidden = this.readLocal<string[]>(this.localKeys.hiddenCameras, []);
+    const keys = [camera.id, camera.streamUrl];
+    const updated = [...new Set([...hidden, ...keys])];
+    localStorage.setItem(this.localKeys.hiddenCameras, JSON.stringify(updated));
+  }
+
+  private showCamera(camera: Pick<YoloCamera, 'id' | 'streamUrl'>): void {
+    const hidden = this.readLocal<string[]>(this.localKeys.hiddenCameras, []);
+    const updated = hidden.filter(key => key !== camera.id && key !== camera.streamUrl);
+    localStorage.setItem(this.localKeys.hiddenCameras, JSON.stringify(updated));
+  }
+
+  private filterVisibleCameras(cameras: YoloCamera[]): YoloCamera[] {
+    return cameras.filter(camera => !this.isCameraHidden(camera));
   }
 
   private dedupeCameras(cameras: YoloCamera[]): YoloCamera[] {
@@ -314,6 +367,29 @@ export class YoloService {
     }
   }
 
+  private normalizeAfluenciaCount(response: unknown): number {
+    if (typeof response === 'number') return Math.max(0, response);
+    if (typeof response === 'string') return Math.max(0, Number(response) || 0);
+
+    if (response && typeof response === 'object') {
+      const value = response as Record<string, unknown>;
+      const candidates = [
+        value['cantidad'],
+        value['count'],
+        value['conteo'],
+        value['aforo'],
+        value['total'],
+        value['personas'],
+        value['currentInside'],
+        value['cantidadDetectada'],
+        value['personasDetectadas']
+      ];
+      const found = candidates.find(item => item !== undefined && item !== null);
+      return Math.max(0, Number(found) || 0);
+    }
+
+    return 0;
+  }
   private escapeCsv(value: unknown): string {
     const text = String(value ?? '').replace(/"/g, '""');
     return `"${text}"`;

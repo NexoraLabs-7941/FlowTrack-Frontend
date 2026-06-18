@@ -76,7 +76,7 @@
               <div class="camera-actions">
                 <button mat-stroked-button class="mini-action" type="button" (click)="activateCameraFromTable(camera, $event)">Activar</button>
                 <button mat-stroked-button class="mini-action off-btn" type="button"
-                        [disabled]="selectedCameraId !== camera.id || !isVideoPlaying()"
+                        [disabled]="!canTurnOffCamera(camera) || deactivatingCamera()"
                         (click)="deactivateCamera(camera, $event)">Apagar</button>
                 <button mat-icon-button class="icon-action delete-btn" type="button"
                         aria-label="Eliminar cámara"
@@ -93,19 +93,41 @@
 
         <div class="local-camera-section">
           @if (showNewCameraForm()) {
-            <h3>Agregar Nueva Cámara</h3>
+            <h3>Agregar nueva camara</h3>
             <div class="new-camera-form">
+              @if (browserCameras().length) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Camara disponible</mat-label>
+                  <mat-select [(ngModel)]="newCameraDeviceId">
+                    @for (device of browserCameras(); track device.deviceId) {
+                      <mat-option [value]="device.deviceId">
+                        {{ getDeviceLabel(device) }} - ID camara {{ resolveAforoCameraId(device.label || getDeviceLabel(device)) ?? 'N/D' }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              } @else {
+                <div class="camera-status">{{ localCameraError || 'No se detectaron camaras disponibles.' }}</div>
+                <button mat-stroked-button type="button" class="retry-camera-btn" (click)="refreshBrowserCameras()">
+                  <mat-icon>refresh</mat-icon>
+                  Buscar camaras
+                </button>
+              }
               <mat-form-field appearance="outline">
                 <mat-label>Nombre</mat-label>
-                <input matInput [(ngModel)]="newCameraName" placeholder="Cámara góndola 2">
+                <input matInput [(ngModel)]="newCameraName" placeholder="Ej. Entrada principal">
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>Ubicación</mat-label>
-                <input matInput [(ngModel)]="newCameraLocation" placeholder="Pasillo bebidas">
+                <mat-label>Ubicacion</mat-label>
+                <input matInput [(ngModel)]="newCameraLocation" placeholder="Ej. Laptop / Camara local">
               </mat-form-field>
               <div class="form-actions">
-                <button mat-flat-button color="primary" (click)="saveNewCamera()">Guardar Cámara</button>
-                <button mat-stroked-button (click)="showNewCameraForm.set(false)">Cancelar</button>
+                <button mat-stroked-button type="button" (click)="refreshBrowserCameras()">
+                  <mat-icon>refresh</mat-icon>
+                  Actualizar
+                </button>
+                <button mat-flat-button color="primary" type="button" (click)="saveNewCamera()" [disabled]="!browserCameras().length">Vincular camara</button>
+                <button mat-stroked-button type="button" (click)="cancelNewCamera()">Cancelar</button>
               </div>
             </div>
           } @else {
@@ -113,6 +135,7 @@
             @if (browserCameras().length) {
               <mat-form-field appearance="outline" class="camera-picker">
                 <mat-label>Cámara para vista previa</mat-label>
+                <input matInput [value]="getDeviceLabel(browserCameras()[0])" readonly style="display:none">
                 <mat-select [(ngModel)]="selectedBrowserCameraId">
                   @for (device of browserCameras(); track device.deviceId) {
                     <mat-option [value]="device.deviceId">{{ getDeviceLabel(device) }}</mat-option>
@@ -155,8 +178,10 @@
               </mat-select>
             </mat-form-field>
           }
-          @if (isVideoPlaying()) {
-            <button mat-stroked-button class="video-off-btn" type="button" (click)="deactivateActiveCamera()">
+          @if (isVideoPlaying() || canTurnOffCamera(selectedCamera())) {
+            <button mat-stroked-button class="video-off-btn" type="button"
+                    [disabled]="deactivatingCamera()"
+                    (click)="deactivateActiveCamera()">
               <mat-icon>videocam_off</mat-icon>
               Apagar
             </button>
@@ -202,10 +227,12 @@
       <mat-card class="people-card">
         <h2>Conteo de personas</h2>
         <div class="people-controls">
-          <button mat-mini-fab color="primary" (click)="entries = entries + 1"><mat-icon>login</mat-icon></button>
-          <div><strong>{{ entries }}</strong><span>Entradas</span></div>
-          <button mat-mini-fab color="warn" (click)="exits = exits + 1"><mat-icon>logout</mat-icon></button>
-          <div><strong>{{ exits }}</strong><span>Salidas</span></div>
+          <button mat-mini-fab color="primary" type="button" disabled><mat-icon>groups</mat-icon></button>
+          <div><strong>{{ currentPeopleInside() }}</strong><span>Personas detectadas</span></div>
+          <button mat-stroked-button type="button" (click)="refreshSelectedAfluencia()">
+            <mat-icon>refresh</mat-icon>
+            Actualizar
+          </button>
           <button mat-flat-button color="primary" (click)="registerPeopleCounter()">Guardar conteo</button>
         </div>
       </mat-card>

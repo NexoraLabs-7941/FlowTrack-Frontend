@@ -168,7 +168,7 @@
       <mat-card class="video-card">
         <div class="video-header">
           <span class="live-dot" [class.live-on]="isVideoPlaying()"></span>
-          <strong>{{ selectedCamera().name || 'Sin cámara seleccionada' }}</strong>
+          <strong>{{ selectedCamera()?.name || 'Sin cámara seleccionada' }}</strong>
           @if (browserCameras().length > 1) {
             <mat-form-field appearance="outline" class="video-camera-select">
               <mat-select [(ngModel)]="selectedBrowserCameraId" (selectionChange)="previewSelectedBrowserCamera()">

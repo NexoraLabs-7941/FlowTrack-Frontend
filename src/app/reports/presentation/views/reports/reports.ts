@@ -141,6 +141,14 @@ export class ReportsComponent implements OnInit {
       this.availableCategories = Array.from(categoriesSet).sort();
       this.updateFilteredProvidersReport();
     });
+
+    // ✅ AQUÍ COLOCAS EL TERCER EFFECT (Dentro del constructor)
+    // Pre-cargar nombres cuando las ventas estén disponibles
+    effect(() => {
+      if (this.store.hasSalesReport()) {
+        this.preloadProductAndKitNames();
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -148,13 +156,6 @@ export class ReportsComponent implements OnInit {
     // Initialize filtered products with all products initially
     this.updateFilteredExpiringProducts();
     this.updateFilteredProvidersReport();
-
-    // Pre-cargar nombres cuando las ventas estén disponibles
-    effect(() => {
-      if (this.store.hasSalesReport()) {
-        this.preloadProductAndKitNames();
-      }
-    });
   }
 
   /**

@@ -1,0 +1,18 @@
+<h2 class="provider-header">{{'providers-view.providers' | translate}}</h2>
+
+<section class="toolbar-row">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'providers-view.providers-toolbar.search' | translate }}</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput [(ngModel)]="searchTerm"
+           placeholder="{{'providers-view.providers-toolbar.search' | translate}}..."/>
+  </mat-form-field>
+  <button class="filter-btn" id="provider-filter-btn" matFab extended>
+    <mat-icon>filter_list</mat-icon>
+    {{ 'providers-view.providers-toolbar.filter' | translate }}
+  </button>
+  <button class="add-provider-btn" matFab extended (click)="onCreate()">
+    <mat-icon>add</mat-icon>
+    {{ 'providers-view.providers-toolbar.add-provider' | translate }}
+  </button>
+</section>

@@ -1,0 +1,157 @@
+<div class="yolo-page-container">
+
+  <div class="page-breadcrumb">
+    <span>Inventario / Ingresar Reposición / <strong>Yolo</strong></span>
+  </div>
+
+  <div class="top-row">
+    <div class="lote-group">
+      <label>Lote</label>
+      <input class="input-field" [(ngModel)]="lote" placeholder="L-01" />
+    </div>
+    <div class="dates-group">
+      <div class="date-item">
+        <label>Fecha recepción</label>
+        <input
+          class="input-field date-field"
+          type="date"
+          [ngModel]="fechaRecepcionStr"
+          (ngModelChange)="onFechaRecepcionChange($event)"
+        />
+      </div>
+      <div class="date-item">
+        <label>Fecha de vencimiento</label>
+        <input
+          class="input-field date-field"
+          type="date"
+          [ngModel]="fechaVencimientoStr"
+          (ngModelChange)="onFechaVencimientoChange($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="yolo-layout">
+
+    <div class="yolo-image-panel">
+      <div class="image-preview" *ngIf="yoloImagePreview && !cameraActive">
+        <img [src]="yoloImagePreview" alt="Foto para detección" />
+        <span class="live-badge" *ngIf="detecting">● DETECTANDO...</span>
+        <span class="live-badge detected-badge" *ngIf="!detecting && yoloDetections[0]?.detectedQuantity">● YOLO DETECTADO</span>
+      </div>
+
+      <div class="camera-preview" *ngIf="cameraActive">
+        <video #cameraVideo autoplay playsinline muted></video>
+        <span class="live-badge">● CÁMARA ACTIVA</span>
+      </div>
+
+      <div class="image-placeholder" *ngIf="!yoloImagePreview && !cameraActive">
+        <mat-icon>image</mat-icon>
+        <p>Sube una foto o activa la cámara</p>
+      </div>
+
+      <div class="camera-actions">
+        <button
+          type="button"
+          class="btn-camera"
+          *ngIf="!cameraActive"
+          (click)="activateCamera()"
+          [disabled]="detecting"
+        >
+          Activar cámara
+        </button>
+        <button
+          type="button"
+          class="btn-capture"
+          *ngIf="cameraActive"
+          (click)="capturePhoto()"
+          [disabled]="detecting"
+        >
+          Tomar foto
+        </button>
+        <button
+          type="button"
+          class="btn-stop"
+          *ngIf="cameraActive"
+          (click)="stopCamera()"
+        >
+          Detener
+        </button>
+      </div>
+
+      <label class="btn-upload" [class.disabled]="detecting">
+        + Subir foto
+        <input type="file" accept="image/*" (change)="onImageSelected($event)" hidden [disabled]="detecting" />
+      </label>
+
+      <p class="camera-error" *ngIf="cameraError">{{ cameraError }}</p>
+      <p class="detection-error" *ngIf="detectionError">{{ detectionError }}</p>
+    </div>
+
+    <div class="yolo-table-panel">
+      <div class="yolo-table-header">
+        <span>Items por Validar</span>
+      </div>
+
+      <div class="product-selector">
+        <label for="productSelect">Producto</label>
+        <select
+          id="productSelect"
+          class="input-field product-select"
+          [ngModel]="selectedProductId"
+          (ngModelChange)="onProductChange($event)"
+          [disabled]="detecting"
+        >
+          <option value="" disabled>Selecciona un producto</option>
+          <option *ngFor="let product of activeProducts" [value]="product.id">
+            {{ product.name }}
+          </option>
+        </select>
+      </div>
+
+      <table class="validation-table">
+        <thead>
+        <tr>
+          <th>PRODUCTO</th>
+          <th>STOCK ACTUAL</th>
+          <th>CANT. DETECTADA</th>
+          <th>CANT. VALIDADA</th>
+          <th>TOTAL</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let d of yoloDetections; let i = index">
+          <td class="product-name-cell">{{ d.productName }}</td>
+          <td class="center">{{ d.currentStock }}</td>
+          <td class="center detected">{{ d.detectedQuantity }}</td>
+          <td class="center">
+            <input
+              class="qty-input-inline"
+              type="number"
+              [value]="d.validatedQuantity"
+              (change)="updateDetectionQty(i, +$any($event.target).value)"
+              min="0"
+            />
+          </td>
+          <td class="center total-green">{{ d.total }}</td>
+        </tr>
+        <tr *ngIf="!yoloDetections.length">
+          <td colspan="5" class="empty-row">Selecciona un producto para validar el conteo.</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="table-actions">
+        <button class="btn-cancel" (click)="goBack()">Volver</button>
+        <button class="btn-save" [disabled]="!canSave || loading || detecting" (click)="onSave()">Guardar</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div *ngIf="loading || detecting" class="loading-overlay">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>{{ detecting ? 'Detectando objetos con YOLO...' : 'Guardando...' }}</p>
+  </div>
+
+</div>

@@ -1,0 +1,108 @@
+<div class="dialog-container">
+
+  <div class="dialog-accent"></div>
+
+  <div class="dialog-header">
+    <div class="header-text">
+      <h2>Ingresar reposición</h2>
+      <p>Registra el ingreso de productos al inventario</p>
+    </div>
+    <button class="btn-yolo" type="button" (click)="openYoloView()">
+      <mat-icon>center_focus_strong</mat-icon>
+      Usar YOLO
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <div class="meta-section">
+      <div class="lote-group">
+        <label>Lote</label>
+        <input class="input-field" [(ngModel)]="lote" placeholder="L-01" />
+      </div>
+      <div class="dates-group">
+        <div class="date-item">
+          <label>Fecha recepción</label>
+          <mat-form-field appearance="outline" class="date-field">
+            <input matInput [matDatepicker]="pickerRec" [(ngModel)]="fechaRecepcion">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerRec"></mat-datepicker-toggle>
+            <mat-datepicker #pickerRec></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="date-item">
+          <label>Fecha de vencimiento</label>
+          <mat-form-field appearance="outline" class="date-field">
+            <input matInput [matDatepicker]="pickerVenc" [(ngModel)]="fechaVencimiento">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerVenc"></mat-datepicker-toggle>
+            <mat-datepicker #pickerVenc></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="products-table">
+        <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Stock actual</th>
+          <th>Cantidad ingresando</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let row of rows; let i = index">
+          <td>
+            <mat-select [(ngModel)]="row.productId" class="product-select" placeholder="Seleccionar">
+              <mat-option value="" disabled>Seleccionar</mat-option>
+              <mat-option *ngFor="let p of products" [value]="p.id">{{ p.name }}</mat-option>
+            </mat-select>
+          </td>
+          <td class="center">{{ getCurrentStock(row.productId) }}</td>
+          <td class="center">
+            <div class="qty-control">
+              <button class="qty-btn" type="button" (click)="decrement(row)">−</button>
+              <span class="qty-value">{{ row.quantity }}</span>
+              <button class="qty-btn" type="button" (click)="increment(row)">+</button>
+            </div>
+          </td>
+          <td class="center total-value">{{ getRowTotal(row) }}</td>
+          <td class="center">
+            <button class="remove-btn" type="button" (click)="removeRow(i)" *ngIf="rows.length > 1" aria-label="Eliminar fila">
+              <mat-icon>close</mat-icon>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button class="btn-add-row" type="button" (click)="addRow()">
+      <mat-icon>add</mat-icon>
+      Agregar producto
+    </button>
+
+    <div class="error-message" *ngIf="isExpirationBeforeReception()">
+      <mat-icon color="warn">error</mat-icon>
+      <span>La fecha de vencimiento no puede ser anterior a la fecha de recepción</span>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Guardando...</p>
+    </div>
+    <div *ngIf="error && !loading" class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button class="btn-cancel" type="button" (click)="onCancel()">Cancelar</button>
+    <button class="btn-save" type="button" [disabled]="!canSave || loading" (click)="onSave()">
+      <mat-icon>save</mat-icon>
+      Guardar
+    </button>
+  </div>
+
+</div>

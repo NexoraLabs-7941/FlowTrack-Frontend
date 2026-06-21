@@ -1,0 +1,51 @@
+<div class="sidebar" [class.expanded]="isExpanded">
+  <button mat-icon-button class="toggle-btn" (click)="toggleSidebar()" [attr.aria-label]="isExpanded ? 'Collapse sidebar' : 'Expand sidebar'">
+    <mat-icon>{{ isExpanded ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+  </button>
+
+  <div class="header-container">
+    <div class="logo-container">
+      @if (isExpanded) {
+        <span class="sidebar-title">{{ t('sidebar.title') }}</span>
+      }
+    </div>
+  </div>
+
+  <mat-nav-list class="menu">
+    <a mat-list-item
+       *ngFor="let item of menuItems()"
+       [routerLink]="item.route"
+       routerLinkActive="active"
+       [disableRipple]="true">
+      <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+      <span matListItemTitle *ngIf="isExpanded">{{ item.titleKey.includes('.') ? t(item.titleKey) : item.titleKey }}</span>
+    </a>
+  </mat-nav-list>
+
+  <mat-divider class="sidebar-divider" *ngIf="isExpanded"></mat-divider>
+
+  @if (isExpanded) {
+    <div class="language-section">
+      <app-language-switcher></app-language-switcher>
+    </div>
+  }
+
+  <mat-divider class="sidebar-divider"></mat-divider>
+
+  <mat-nav-list class="sidebar-footer">
+    <a mat-list-item routerLink="/configuracion" routerLinkActive="active" [disableRipple]="true">
+      <mat-icon matListItemIcon>settings</mat-icon>
+      <span matListItemTitle *ngIf="isExpanded">{{ t('sidebar.footer.settings') }}</span>
+    </a>
+    @if (canAccessPersonalAdmin()) {
+      <a mat-list-item routerLink="/perfil" routerLinkActive="active" [disableRipple]="true">
+        <mat-icon matListItemIcon>person</mat-icon>
+        <span matListItemTitle *ngIf="isExpanded">{{ t('sidebar.footer.personal') }}</span>
+      </a>
+    }
+    <a mat-list-item (click)="logout()" class="logout-btn" [disableRipple]="true">
+      <mat-icon matListItemIcon>logout</mat-icon>
+      <span matListItemTitle *ngIf="isExpanded">{{ t('sidebar.footer.logout') }}</span>
+    </a>
+  </mat-nav-list>
+</div>

@@ -1,0 +1,15 @@
+<h3 class="dlg-title">{{ 'inventory.newCategory' | translate }}</h3>
+
+<div class="form-grid">
+  <label>{{ 'inventory.name' | translate }}</label>
+  <input [(ngModel)]="form.name" [placeholder]="'inventory.categoryNamePlaceholder' | translate"/>
+
+  <label>{{ 'inventory.description' | translate }}</label>
+  <textarea [(ngModel)]="form.description" rows="3" [placeholder]="'inventory.categoryDescriptionPlaceholder' | translate"></textarea>
+</div>
+
+<div class="actions">
+  <button class="btn ghost" (click)="cancel()">{{ 'global.cancel' | translate }}</button>
+  <button class="btn primary" [disabled]="!isValid" (click)="save()">{{ 'global.save' | translate }}</button>
+</div>
+

@@ -1,0 +1,29 @@
+<div class="not-found-container">
+  <div class="language-switcher-wrapper">
+    <app-language-switcher></app-language-switcher>
+  </div>
+
+  <div class="not-found-content">
+    <div class="error-code">404</div>
+    <h1 class="error-title">{{ 'notFound.title' | translate }}</h1>
+    <p class="error-message">{{ 'notFound.message' | translate }}</p>
+    <p class="error-description">{{ 'notFound.description' | translate }}</p>
+    
+    <div class="error-actions">
+      <button class="btn-primary" (click)="goHome()">
+        <i class="material-icons">home</i>
+        {{ 'notFound.goHome' | translate }}
+      </button>
+      <button class="btn-secondary" (click)="goBack()">
+        <i class="material-icons">arrow_back</i>
+        {{ 'notFound.goBack' | translate }}
+      </button>
+    </div>
+  </div>
+  
+  <div class="error-illustration">
+    <div class="error-icon">
+      <i class="material-icons">error_outline</i>
+    </div>
+  </div>
+</div>

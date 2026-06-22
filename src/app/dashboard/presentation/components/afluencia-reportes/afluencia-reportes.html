@@ -1,0 +1,61 @@
+<section class="afluencia-panel" aria-label="Panel de análisis de afluencia">
+  <div class="panel-heading">
+    <div>
+      <span class="panel-eyebrow">Afluencia</span>
+      <h2>Panel de Análisis de Afluencia</h2>
+    </div>
+    <button class="refresh-action" type="button" (click)="loadAnalytics()" [disabled]="loading()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="analytics-alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <div class="analytics-grid">
+    <mat-card class="analytics-card">
+      <mat-card-content>
+        <div class="card-heading">
+          <div>
+            <span>Últimos 7 días</span>
+            <h3>Tráfico diario</h3>
+          </div>
+          <mat-icon>bar_chart</mat-icon>
+        </div>
+        <div class="chart-shell">
+          <canvas
+            baseChart
+            [data]="traficoDiarioChartData()"
+            [type]="barChartType"
+            [options]="traficoDiarioChartOptions"
+            aria-label="Gráfico de tráfico diario">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="analytics-card">
+      <mat-card-content>
+        <div class="card-heading">
+          <div>
+            <span>Hoy · Cámara {{ idCamara }}</span>
+            <h3>Horas pico</h3>
+          </div>
+          <mat-icon>show_chart</mat-icon>
+        </div>
+        <div class="chart-shell">
+          <canvas
+            baseChart
+            [data]="horasPicoChartData()"
+            [type]="lineChartType"
+            [options]="horasPicoChartOptions"
+            aria-label="Gráfico de horas pico">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</section>

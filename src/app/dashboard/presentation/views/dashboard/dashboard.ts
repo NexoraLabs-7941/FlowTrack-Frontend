@@ -11,6 +11,7 @@ import { DashboardStore } from '../../../application/dashboard.store';
 import { AuthStore } from '../../../../auth/application/auth.store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DashboardNotification } from '../../../domain/model/notification.entity';
+import { AfluenciaReportesComponent } from '../../components/afluencia-reportes/afluencia-reportes';
 
 /**
  * Dashboard component displaying statistics and charts.
@@ -28,7 +29,8 @@ import { DashboardNotification } from '../../../domain/model/notification.entity
     MatMenuModule,
     MatBadgeModule,
     BaseChartDirective,
-    TranslateModule
+    TranslateModule,
+    AfluenciaReportesComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'

@@ -1,0 +1,107 @@
+<div class="auth-container">
+  <div class="language-switcher-wrapper">
+    <app-language-switcher></app-language-switcher>
+  </div>
+
+  <div class="auth-branding">
+    <div class="branding-content">
+      <div class="logo-section">
+        <img src="assets/logo.png" alt="FlowTrack Logo" class="logo" />
+        <h1 class="brand-name">FlowTrack</h1>
+      </div>
+      <p class="tagline">{{ t('auth.tagline') }}</p>
+    </div>
+    <div class="decorative-circles decorative-circles-left"></div>
+  </div>
+
+  <div class="auth-form-wrapper">
+    <div class="decorative-circles decorative-circles-right"></div>
+    <mat-card class="auth-card">
+      <mat-card-content>
+        <h2 class="auth-title">{{ t('auth.register.title') }}</h2>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('auth.register.email') }}</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              [attr.aria-label]="t('auth.register.email')"
+              [attr.aria-required]="true"
+              autocomplete="email"
+            />
+            @if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+              <mat-error>{{ t('auth.register.email') }} {{ t('auth.validation.required') }}</mat-error>
+            }
+            @if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
+              <mat-error>{{ t('auth.validation.emailInvalid') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('auth.register.password') }}</mat-label>
+            <input
+              matInput
+              type="password"
+              formControlName="password"
+              [attr.aria-label]="t('auth.register.password')"
+              [attr.aria-required]="true"
+              autocomplete="new-password"
+            />
+            @if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
+              <mat-error>{{ t('auth.register.password') }} {{ t('auth.validation.passwordRequired') }}</mat-error>
+            }
+            @if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
+              <mat-error>{{ t('auth.validation.minLength').replace('{{min}}', '6') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('auth.register.confirmPassword') }}</mat-label>
+            <input
+              matInput
+              type="password"
+              formControlName="confirmPassword"
+              [attr.aria-label]="t('auth.register.confirmPassword')"
+              [attr.aria-required]="true"
+              autocomplete="new-password"
+            />
+            @if (registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched) {
+              <mat-error>{{ t('auth.validation.confirmRequired') }}</mat-error>
+            }
+            @if (registerForm.get('confirmPassword')?.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched) {
+              <mat-error>{{ t('auth.validation.passwordMismatch') }}</mat-error>
+            }
+          </mat-form-field>
+
+          @if (authStore.error()) {
+            <div class="error-message" role="alert">
+              {{ t(authStore.error()!) }}
+            </div>
+          }
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="submit-button"
+            [disabled]="authStore.loading()"
+            [attr.aria-label]="t('auth.register.submit')"
+          >
+            @if (authStore.loading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              {{ t('auth.register.submit') }}
+            }
+          </button>
+
+          <div class="alternative-action">
+            <span class="alternative-text">{{ t('auth.register.hasAccount') }}</span>
+            <a routerLink="/auth/login" class="link-text">{{ t('auth.register.login') }}</a>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,475 @@
+{
+  "global": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "exit": "Salir"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Gestiona las preferencias y opciones de la aplicación",
+    "userInfo": {
+      "title": "Información del Usuario",
+      "email": "Correo electrónico",
+      "role": "Rol",
+      "admin": "Administrador",
+      "user": "Usuario"
+    },
+    "language": {
+      "title": "Idioma",
+      "description": "Selecciona el idioma de la interfaz"
+    },
+    "appInfo": {
+      "title": "Información de la Aplicación",
+      "version": "Versión",
+      "name": "Nombre"
+    }
+  },
+  "sidebar": {
+    "title": "FlowTrack",
+    "menu": {
+      "home": "Inicio",
+      "inventory": "Inventario",
+      "providers": "Proveedores",
+      "sales": "Venta",
+      "reports": "Reportes",
+      "more": "Más",
+      "aria": {
+        "home": "Ir a inicio",
+        "inventory": "Ir a inventario",
+        "providers": "Ir a proveedores",
+        "sales": "Ir a ventas",
+        "reports": "Ir a reportes",
+        "more": "Abrir menú de más opciones",
+        "language": "Selector de idioma",
+        "navigation": "Navegación principal",
+        "yolo": "Ir a módulo YOLO"
+      },
+      "yolo": "YOLO"
+    },
+    "footer": {
+      "settings": "Configuración",
+      "personal": "Administración de personal",
+      "logout": "Cerrar Sesión",
+      "aria": {
+        "settings": "Ir a configuración",
+        "personal": "Ir a administración de personal",
+        "logout": "Cerrar sesión"
+      }
+    }
+  },
+  "home": {
+    "title": "Bienvenido a FlowTrack",
+    "subtitle": "Sistema de gestión de inventario"
+  },
+  "inventory": {
+    "title": "Gestión de Inventario",
+    "subtitle": "Administra tus productos y stock",
+    "emptyState": {
+      "title": "Inventario",
+      "description": "Esta es la pantalla de inventario",
+      "message": "Próximamente podrás gestionar todos tus productos aquí"
+    },
+    "header": "Inventario",
+    "products": "Productos",
+    "name": "Nombre",
+    "unitPrice": "Precio unitario",
+    "currentStock": "Stock actual",
+    "minimumStock": "Stock mínimo",
+    "informationProduct": "Información",
+    "actions": "Acciones",
+    "viewDetail": "Ver detalle",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Estás seguro de eliminar el producto {name}?",
+    "noProductsFound": "No se encontraron productos",
+    "tryDifferentSearch": "Intenta con otros criterios de búsqueda o filtros",
+    "filter": "Filtros",
+    "search": "Buscar",
+    "allCategories": "Todas las categorías",
+    "allProviders": "Todos los proveedores",
+    "allLots": "Todos los lotes",
+    "allStatuses": "Todos los estados",
+    "date": "Fecha",
+    "clearFilters": "Limpiar filtros",
+    "removeFilter": "Eliminar filtro",
+    "loadingKits": "Cargando kits...",
+    "loadingProducts": "Cargando products...",
+    "retry": "Reintentar",
+    "product": "Producto",
+    "newReplacement": "Ingresar reposición",
+    "noKits": "No hay kits disponibles",
+    "startKits": "Comienza creando tu primer kit haciendo clic en el botón",
+    "newKit": "Nuevo kit",
+    "priceKit": "Precio kit",
+    "quantity": "Cantidad a seleccionar",
+    "category": "Categoría",
+    "provider": "Proveedor",
+    "select": "Seleccionar",
+    "newProduct": "Nuevo producto",
+    "newCategory": "Nueva categoría",
+    "description": "Descripción",
+    "categoryNamePlaceholder": "Ej: Lácteos",
+    "categoryDescriptionPlaceholder": "Ej: Productos lácteos y derivados",
+    "productDescriptionPlaceholder": "Ej: Leche entera en envase de 1 litro",
+    "isActive": "Estado",
+    "activeProduct": "Producto activo",
+    "lot": "Lote",
+    "receiptDate": "Fecha de recepción",
+    "expirationDate": "Fecha de vencimiento",
+    "amountEntering": "Cantidad ingresando",
+    "lastReception": "Última recepción",
+    "lowStock": "Stock bajo",
+    "status": "Estado",
+    "outOfStock": "Sin Stock",
+    "normalStock": "Normal",
+    "kits": "Kits",
+    "price": "Precio",
+    "kitProductUnitPrice": "Precio unitario",
+    "kitProductTotal": "Total"
+  },
+  "providers-view": {
+    "providers": "Proveedores",
+    "providers-table": {
+      "name": "Nombre",
+      "contact": "Contacto",
+      "phone": "Celular",
+      "email": "Correo Electrónico",
+      "ruc": "RUC",
+      "address": "Dirección",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "providers-toolbar": {
+      "search": "Buscar",
+      "filter": "Filtrar",
+      "add-provider": "Agregar Proveedor"
+    },
+    "form-dialog": {
+      "add": "Agregar Proveedor",
+      "edit": "Editar Proveedor",
+      "first-name": "Nombres",
+      "last-name": "Apellidos",
+      "phone-number": "Celular",
+      "email": "Correo Electrónico",
+      "ruc": "RUC",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "first-name-required": "El nombre es requerido",
+      "first-name-minlength": "El nombre debe tener al menos 2 caracteres",
+      "last-name-required": "El apellido es requerido",
+      "last-name-minlength": "El apellido debe tener al menos 2 caracteres",
+      "phone-number-required": "El teléfono es requerido",
+      "phone-number-invalid": "Formato de teléfono inválido",
+      "email-required": "El correo electrónico es requerido",
+      "email-invalid": "Formato de correo electrónico inválido",
+      "ruc-required": "El RUC es requerido",
+      "ruc-invalid": "El RUC debe tener exactamente 11 dígitos"
+    }
+  },
+  "sales": {
+    "title": "Gestión de Ventas",
+    "subtitle": "Administra tus ventas y transacciones",
+    "filter": "Filtro",
+    "emptyState": {
+      "title": "Ventas",
+      "description": "Esta es la pantalla de ventas",
+      "message": "Próximamente podrás gestionar todas tus ventas aquí"
+    },
+    "products": "Productos",
+    "salesDraft": "Borrador salida de productos",
+    "table": {
+      "name": "Nombre",
+      "unitPrice": "Precio unitario",
+      "stock": "Stock",
+      "quantity": "Cantidad",
+      "totalPrice": "Precio total",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar"
+    },
+    "kits": "Kits",
+    "noKitsAvailable": "No hay kits disponibles",
+    "total": "Total",
+    "kit": "Kit",
+    "emptyCart": "El borrador está vacío. Agrega productos o kits para comenzar."
+  },
+  "auth": {
+    "login": {
+      "title": "Inicia sesión",
+      "email": "Email",
+      "password": "Contraseña",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "submit": "Iniciar sesión",
+      "noAccount": "¿No tienes una cuenta?",
+      "createAccount": "Crea una"
+    },
+    "register": {
+      "title": "Regístrate",
+      "name": "Nombre",
+      "email": "Email",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "submit": "Registrarse",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "login": "Inicia sesión"
+    },
+    "tagline": "Un control de inventario diseñado para que vendas más y te estreses menos",
+    "errors": {
+      "loginFailed": "Error al iniciar sesión. Verifica tus credenciales.",
+      "registerFailed": "Error al registrarse. Intenta nuevamente.",
+      "passwordMismatch": "Las contraseñas no coinciden"
+    },
+    "validation": {
+      "required": "es requerido",
+      "emailInvalid": "Email inválido",
+      "minLength": "Mínimo {{min}} caracteres",
+      "passwordRequired": "es requerida",
+      "confirmRequired": "Confirmación es requerida",
+      "passwordMismatch": "Las contraseñas no coinciden"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "greeting": "Buenos días",
+    "notifications": {
+      "title": "Notificaciones",
+      "button": "Abrir notificaciones",
+      "icon": "notifications",
+      "empty": "No hay notificaciones",
+      "types": {
+        "warning": "Advertencia",
+        "alert": "Alerta",
+        "info": "Información"
+      }
+    },
+    "stats": {
+      "productsInInventory": "Productos en inventario",
+      "monthlyIncome": "Ingresos del mes",
+      "salesThisMonth": "Ventas realizadas este mes",
+      "productsWithAlerts": "Productos con alertas"
+    },
+    "charts": {
+      "topProducts": "Productos más vendidos",
+      "monthlyIncome": "Ingresos mensuales"
+    },
+    "notificationMessages": {
+      "expiringProduct": "El producto \"{{product}}\" está por vencerse el {{date}}",
+      "lowStock": "El producto \"{{product}}\" solo tiene {{quantity}} unidades en stock"
+    },
+    "notificationTitles": {
+      "expiringProduct": "Producto pronto a caducar",
+      "lowStock": "Producto a agotarse"
+    }
+  },
+  "personal": {
+    "title": "Administración de Personal"
+  },
+  "personalAdministration": {
+    "title": "Administración de Personal",
+    "subtitle": "Gestiona los usuarios de tu negocio",
+    "search": "Buscar...",
+    "filter": "Filtro",
+    "status": "Estado",
+    "role": "Rol",
+    "all": "Todos",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "apply": "Aplicar",
+    "clear": "Limpiar",
+    "clearFilters": "Limpiar filtros",
+    "newRole": "Nuevo Rol",
+    "newUser": "Nuevo Usuario",
+    "addUser": "Agregar usuario",
+    "name": "Nombre",
+    "account": "Cuenta",
+    "actions": "Acciones",
+    "newUserTitle": "Nuevo Personal",
+    "nameLabel": "Nombre(s)",
+    "lastnameLabel": "Apellidos",
+    "phoneLabel": "Número telefónico",
+    "emailLabel": "Correo",
+    "passwordLabel": "Contraseña",
+    "roleLabel": "Rol",
+    "editUserTitle": "Editar Usuario",
+    "fullNameLabel": "Nombre completo",
+    "accountLabel": "Cuenta (correo)",
+    "statusLabel": "Estado",
+    "confirmDeleteTitle": "Confirmar eliminación",
+    "confirmDeleteMessage": "¿Seguro que deseas eliminar a {{name}}?",
+    "newRoleTitle": "Nuevo Rol",
+    "roleNameLabel": "Nombre del rol",
+    "rolePlaceholder": "Ej: Supervisor",
+    "permissionsTitle": "Permisos",
+    "permissionsHint": "Selecciona los módulos a los que este usuario tendrá acceso",
+    "permissionsSelected": "{{count}} permiso(s) seleccionado(s)",
+    "permissionDashboard": "Dashboard",
+    "permissionInventory": "Inventario",
+    "permissionSales": "Ventas",
+    "permissionProviders": "Proveedores",
+    "permissionReports": "Reportes",
+    "permissionUserManagement": "Gestión de Usuarios",
+    "permissionProducts": "Gestión de productos",
+    "permissionPurchases": "Proceso de compra",
+    "permissionStats": "Estadísticas",
+    "permissionUsers": "Gestión de usuarios",
+    "loadingUsers": "Cargando usuarios...",
+    "noUsers": "No hay usuarios",
+    "noUsersFiltered": "No se encontraron usuarios con los filtros aplicados",
+    "noUsersYet": "Aún no has agregado usuarios a tu negocio",
+    "admin": "Administrador",
+    "user": "Usuario",
+    "admins": "Admins",
+    "users": "Usuarios",
+    "cannotDeleteSelf": "No puedes eliminarte a ti mismo",
+    "cannotDeleteOwner": "No se puede eliminar al usuario principal",
+    "deleteUser": "Eliminar usuario",
+    "emailPlaceholder": "usuario@ejemplo.com",
+    "passwordPlaceholder": "Mínimo 6 caracteres",
+    "passwordPlaceholderOptional": "Dejar vacío para no cambiar",
+    "passwordHintOptional": "Dejar vacío si no deseas cambiar la contraseña",
+    "emailRequired": "El email es requerido",
+    "emailInvalid": "Ingresa un email válido",
+    "passwordRequired": "La contraseña es requerida",
+    "passwordMinLength": "Mínimo 6 caracteres",
+    "editUser": "Editar usuario",
+    "aria": {
+      "search": "Buscar usuarios",
+      "filterRole": "Filtrar por rol",
+      "createUser": "Crear nuevo usuario",
+      "deleteUser": "Eliminar usuario",
+      "clearFilters": "Limpiar filtros aplicados"
+    }
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saveChanges": "Guardar Cambios",
+    "delete": "Eliminar",
+    "loading": "Cargando..."
+  },
+  "notFound": {
+    "title": "Página No Encontrada",
+    "message": "¡Ups! La página que buscas no existe.",
+    "description": "Es posible que la URL esté mal escrita o que la página se haya movido. Por favor, verifica la dirección o regresa a la página principal.",
+    "goHome": "Ir al Inicio",
+    "goBack": "Volver Atrás"
+  },
+  "reports": {
+    "title": "Reportes",
+    "subtitle": "Visualiza y analiza información importante de tu inventario",
+    "refresh": "Actualizar",
+    "export": "Exportar a Excel",
+    "loading": "Cargando reportes...",
+    "retry": "Reintentar",
+    "expired": "Vencido",
+    "expiresToday": "Vence hoy",
+    "expiresTomorrow": "Vence mañana",
+    "daysLeft": "{days} días restantes",
+    "dayLeft": "{days} día restante",
+    "monthLeft": "{months} mes restante",
+    "monthsLeft": "{months} meses restantes",
+    "tabs": {
+      "providers": "Proveedores",
+      "stock": "Stock Actual",
+      "expiring": "Por Vencer",
+      "lowStock": "Stock Bajo",
+      "sales": "Ventas"
+    },
+    "providers": {
+      "title": "Listado de Proveedores",
+      "subtitle": "Información completa de todos tus proveedores",
+      "empty": "No hay proveedores registrados",
+      "filterByCategory": "Filtrar por categoría",
+      "allCategories": "Todas las categorías",
+      "columns": {
+        "name": "Nombre",
+        "ruc": "RUC",
+        "email": "Correo",
+        "phone": "Teléfono",
+        "productCount": "Productos",
+        "products": "Productos"
+      }
+    },
+    "stock": {
+      "title": "Reporte de Stock Actual",
+      "subtitle": "Estado actual del inventario de todos los productos",
+      "empty": "No hay productos en inventario",
+      "columns": {
+        "productName": "Producto",
+        "category": "Categoría",
+        "currentStock": "Stock Actual",
+        "minStock": "Stock Mínimo",
+        "unitPrice": "Precio Unitario",
+        "totalValue": "Valor Total",
+        "status": "Estado"
+      },
+      "status": {
+        "normal": "Normal",
+        "low": "Bajo",
+        "critical": "Crítico"
+      }
+    },
+    "expiring": {
+      "title": "Productos por Vencer",
+      "subtitle": "Visualiza productos por mes de vencimiento",
+      "empty": "No hay productos con fecha de vencimiento",
+      "emptyFiltered": "No hay productos que vencen en el mes seleccionado",
+      "emptyNext30Days": "No hay productos próximos a vencer en los próximos 30 días",
+      "filterByMonth": "Filtrar por mes",
+      "next30Days": "Próximos 30 días",
+      "showAll": "Mostrar todos",
+      "clearFilter": "Limpiar filtro",
+      "columns": {
+        "productName": "Producto",
+        "category": "Categoría",
+        "expirationDate": "Fecha de Vencimiento",
+        "daysLeft": "Días Restantes",
+        "currentStock": "Stock Actual",
+        "lot": "Lote",
+        "status": "Estado"
+      },
+      "status": {
+        "expired": "Vencido",
+        "critical": "Crítico",
+        "warning": "Advertencia",
+        "normal": "Normal"
+      }
+    },
+    "lowStock": {
+      "title": "Productos con Stock Bajo",
+      "subtitle": "Productos que están por debajo del stock mínimo",
+      "empty": "No hay productos con stock bajo",
+      "columns": {
+        "productName": "Producto",
+        "category": "Categoría",
+        "currentStock": "Stock Actual",
+        "minStock": "Stock Mínimo",
+        "difference": "Diferencia",
+        "unitPrice": "Precio Unitario",
+        "status": "Estado"
+      },
+      "status": {
+        "critical": "Crítico",
+        "low": "Bajo",
+        "normal": "Normal"
+      }
+    },
+    "sales": {
+      "title": "Reporte de Ventas",
+      "subtitle": "Historial de todas las ventas realizadas",
+      "empty": "No hay ventas registradas",
+      "columns": {
+        "id": "ID",
+        "date": "Fecha",
+        "totalAmount": "Monto Total",
+        "products": "Detalles de Productos"
+      }
+    }
+  },
+  "yolo": {
+    "title": "YOLO"
+  }
+}

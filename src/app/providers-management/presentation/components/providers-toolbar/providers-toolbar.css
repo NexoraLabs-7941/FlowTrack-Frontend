@@ -1,0 +1,47 @@
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.toolbar-row mat-form-field {
+  flex: 1;
+  max-width: 1400px;
+}
+
+.toolbar-row button {
+  margin-right: 0.5rem;
+  top: -8px;
+  background-color: white;
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 127px;
+  height: 47px;
+}
+.provider-header {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #ff662a;
+  margin-top: auto;
+
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ff662a;
+  padding-bottom: 0.3rem;
+}
+
+.add-provider-btn {
+  background-color: #28BF68 !important;
+  color: white !important;
+  width: 368px !important;
+}
+
+.add-provider-btn mat-icon {
+  color: white !important;
+}
+
+

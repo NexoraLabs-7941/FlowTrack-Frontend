@@ -1,0 +1,368 @@
+.dialog-container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+.dialog-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  border-bottom: 1px solid #f0f0f0;
+  background: white;
+}
+
+.dialog-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
+}
+
+.close-btn {
+  color: #6b7280 !important;
+  width: 36px;
+  height: 36px;
+  min-width: 36px !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  background: transparent;
+  margin-left: auto;
+}
+
+.close-btn:hover:not(:disabled) {
+  background: #f3f4f6 !important;
+  color: #1f2937 !important;
+  transform: scale(1.05);
+}
+
+.close-btn mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+}
+
+.dialog-content {
+  padding: 32px;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.form-field-full-width {
+  width: 100%;
+}
+
+::ng-deep .form-field .mat-mdc-form-field-infix {
+  min-height: 48px;
+  padding: 12px 0;
+}
+
+::ng-deep .form-field .mat-mdc-form-field-icon-prefix {
+  padding-right: 16px !important;
+}
+
+.permissions-section {
+  margin-top: 16px;
+}
+
+.permissions-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.permissions-icon {
+  color: #6366f1;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.permissions-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.permissions-hint {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.permissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.permission-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: white;
+  position: relative;
+  gap: 10px;
+}
+
+.permission-card:hover:not(.disabled) {
+  border-color: #c7c9fc;
+  background: #fafaff;
+}
+
+.permission-card.selected {
+  border-color: #6366f1;
+  background: #f0f4ff;
+}
+
+.permission-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.permission-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.permission-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.permission-check mat-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.permission-card.selected .permission-check {
+  background: #6366f1;
+}
+
+.permission-card.selected .permission-check mat-icon {
+  opacity: 1;
+}
+
+.permission-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.permission-card.selected .permission-icon-wrapper {
+  transform: scale(1.1);
+}
+
+.permission-icon-wrapper mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.permission-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.permission-card.selected .permission-label {
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.permissions-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #166534;
+}
+
+.permissions-summary mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #16a34a;
+}
+
+.permissions-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 16px;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 32px 32px;
+  border-top: 1px solid #f0f0f0;
+  background: white;
+}
+
+.dialog-actions button {
+  min-width: 100px;
+  height: 40px;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.btn-cancel {
+  border: 1px solid #e5e7eb !important;
+  color: #6b7280 !important;
+  background: white !important;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #f9fafb !important;
+  border-color: #d1d5db !important;
+  color: #374151 !important;
+}
+
+.btn-save {
+  background: #f97316 !important;
+  color: white !important;
+  border: none !important;
+}
+
+.btn-save:hover:not(:disabled) {
+  background: #ea580c !important;
+}
+
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-save mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.spinner {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .dialog-header {
+    padding: 20px 24px;
+  }
+
+  .dialog-content {
+    padding: 24px;
+  }
+
+  .dialog-actions {
+    padding: 20px 24px 24px;
+    flex-direction: column-reverse;
+  }
+
+  .dialog-actions button {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .permissions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .permission-content {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding-right: 0;
+  }
+
+  .permission-icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .permission-icon-wrapper mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .permission-label {
+    text-align: left;
+  }
+}
+

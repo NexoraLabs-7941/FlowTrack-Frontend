@@ -1,0 +1,238 @@
+<div class="inventory-container">
+  <div class="inventory-grid">
+    <div class="products-column">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>{{ 'inventory.products' | translate }}</h2>
+        </div>
+        <div class="toolbar-buttons">
+          <button class="btn-blue" (click)="openNewCategoryDialog()">＋ {{ 'inventory.category' | translate }}</button>
+          <button class="btn-purple" (click)="openNewKitDialog()">＋ Kit</button>
+          <button class="btn-green" (click)="openNewProductDialog()">＋ {{ 'inventory.product' | translate}}</button>
+          <button class="btn-orange" (click)="openRestockingDialog()">＋ {{ 'inventory.newReplacement' | translate }}</button>
+        </div>
+      </div>
+      <div class="products-card">
+        <div class="action-bar">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              matInput
+              type="text"
+              [placeholder]="'inventory.search' | translate"
+              [value]="searchTerm()"
+              (input)="onSearchChange($any($event.target).value)" />
+          </mat-form-field>
+
+          <div class="filters-container">
+            <mat-form-field appearance="outline" class="filter-field-inline">
+              <mat-label>{{ 'inventory.category' | translate }}</mat-label>
+              <mat-select [value]="selectedCategory()" (selectionChange)="onCategorySelected($event.value)">
+                <mat-option value="">{{ 'inventory.allCategories' | translate }}</mat-option>
+                @for (category of categories; track category.id) {
+                  <mat-option [value]="category.id">{{ category.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-field-inline">
+              <mat-label>{{ 'inventory.provider' | translate }}</mat-label>
+              <mat-select [value]="selectedProvider()" (selectionChange)="onProviderSelected($event.value)">
+                <mat-option value="">{{ 'inventory.allProviders' | translate }}</mat-option>
+                @for (provider of providers; track provider.id) {
+                  <mat-option [value]="provider.id">{{ getProviderName(provider.id) }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-field-inline">
+              <mat-label>{{ 'inventory.status' | translate }}</mat-label>
+              <mat-select [value]="selectedStatus()" (selectionChange)="onStatusSelected($event.value)">
+                <mat-option value="">{{ 'inventory.allStatuses' | translate }}</mat-option>
+                <mat-option value="normal">{{ 'inventory.normalStock' | translate }}</mat-option>
+                <mat-option value="lowStock">{{ 'inventory.lowStock' | translate }}</mat-option>
+                <mat-option value="outOfStock">{{ 'inventory.outOfStock' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        @if (activeFiltersCount > 0) {
+          <div class="applied-filters-bar">
+            <div class="filters-chips">
+              @for (filter of activeFilters; track filter.type) {
+                <mat-chip [removable]="true" (removed)="removeFilter(filter.type)">
+                  {{ filter.label }}
+                  <button matChipRemove [attr.aria-label]="'inventory.removeFilter' | translate">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+              <button mat-stroked-button class="clear-filters-btn" (click)="clearFilters()" [attr.aria-label]="'inventory.clearFilters' | translate">
+                <mat-icon>clear</mat-icon>
+                <span>{{ 'inventory.clearFilters' | translate }}</span>
+              </button>
+            </div>
+          </div>
+        }
+
+        <div class="products-list" *ngIf="!store.loading() && !store.error()">
+          <div class="table-wrapper">
+            <table class="products-table">
+              <thead>
+              <tr>
+                <th>{{ 'inventory.name' | translate }}</th>
+                <th>{{ 'inventory.unitPrice' | translate }}</th>
+                <th>{{ 'inventory.currentStock' | translate }}</th>
+                <th>{{ 'inventory.minimumStock' | translate }}</th>
+                <th class="status-column">{{ 'inventory.status' | translate }}</th>
+                <th>{{ 'inventory.actions' | translate }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              @if (productsRow.length === 0) {
+                <tr>
+                  <td colspan="6" class="no-results-cell">
+                    <div class="no-results-message">
+                      <mat-icon>search_off</mat-icon>
+                      <p>{{ 'inventory.noProductsFound' | translate }}</p>
+                      @if (searchTerm() || selectedCategory() || selectedProvider() || selectedStatus()) {
+                        <small>{{ 'inventory.tryDifferentSearch' | translate }}</small>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              } @else {
+                @for (p of paginatedProducts; track p.id) {
+                  <tr [class.low-stock]="p.currentStock > 0 && p.currentStock <= p.minStock"
+                      [class.out-of-stock]="p.currentStock === 0">
+                    <td>
+                      <div class="product-name-cell">
+                        <span>{{ p.name }}</span>
+                      </div>
+                    </td>
+                    <td>S/. {{ p.unitPrice | number:'1.2-2' }}</td>
+                    <td>
+                      <span class="stock-quantity">
+                        {{ p.currentStock }}
+                      </span>
+                    </td>
+                    <td>{{ p.minStock }}</td>
+                    <td>
+                      @if (p.currentStock === 0) {
+                        <span class="stock-status-badge out-of-stock-badge">{{ 'inventory.outOfStock' | translate }}</span>
+                      } @else if (p.currentStock <= p.minStock) {
+                        <span class="stock-status-badge low-stock-badge">{{ 'inventory.lowStock' | translate }}</span>
+                      } @else {
+                        <span class="stock-status-badge normal-stock-badge">{{ 'inventory.normalStock' | translate }}</span>
+                      }
+                    </td>
+                    <td>
+                      <button mat-icon-button [matMenuTriggerFor]="menu" class="actions-btn">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="openProductInfo(p)">
+                          <mat-icon>visibility</mat-icon>
+                          <span>{{ 'inventory.viewDetail' | translate }}</span>
+                        </button>
+                        <button mat-menu-item (click)="editProduct(p)">
+                          <mat-icon>edit</mat-icon>
+                          <span>{{ 'inventory.edit' | translate }}</span>
+                        </button>
+                        <mat-divider></mat-divider>
+                        <button mat-menu-item (click)="deleteProduct(p)" class="delete-action">
+                          <mat-icon>delete</mat-icon>
+                          <span>{{ 'inventory.delete' | translate }}</span>
+                        </button>
+                      </mat-menu>
+                    </td>
+                  </tr>
+                }
+              }
+              </tbody>
+            </table>
+          </div>
+          @if (productsRow.length > 0) {
+            <mat-paginator
+              [length]="totalProducts"
+              [pageSize]="pageSize()"
+              [pageIndex]="pageIndex()"
+              [pageSizeOptions]="[5, 10, 25]"
+              (page)="onPageChange($event)"
+              showFirstLastButtons
+              class="products-paginator">
+            </mat-paginator>
+          }
+      </div>
+      </div>
+    </div>
+
+    <div class="kits-column">
+      <div class="section-title">
+        <h2>{{ 'inventory.kits' | translate }}</h2>
+      </div>
+
+      <div class="kits-content">
+          <div class="content" *ngIf="store.loading()">
+          <div class="loading-state">
+            <i class="material-icons rotating">refresh</i>
+            <p>{{ 'inventory.loadingKits' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="content" *ngIf="store.error() && !store.loading()">
+          <div class="error-state">
+            <i class="material-icons">error_outline</i>
+            <p>{{ store.error() }}</p>
+            <button class="btn-retry" (click)="store.refresh()">{{ 'inventory.retry' | translate }}</button>
+          </div>
+        </div>
+
+        <div class="kits-list" *ngIf="!store.loading() && !store.error() && store.kits().length > 0">
+          <mat-card *ngFor="let kit of store.kits()">
+            <mat-card-header>
+              <mat-card-title>{{ kit.name }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="kit-products-list">
+                <div class="kit-product" *ngFor="let product of kit.products">
+                  <div class="kit-product-left">
+                    <span class="kit-product-quantity">{{ product.quantity }}x</span>
+                    <span class="kit-product-name">{{ getProductName(product.productId) }}</span>
+                  </div>
+                  <div class="kit-product-right">
+                    <div class="kit-product-price-row">
+                      <span class="kit-product-label">{{ 'inventory.kitProductUnitPrice' | translate }}:</span>
+                      <span class="kit-product-unit-price">S/ {{ product.price | number: '1.2-2' }}</span>
+                    </div>
+                    <div class="kit-product-price-row">
+                      <span class="kit-product-label">{{ 'inventory.kitProductTotal' | translate }}:</span>
+                      <span class="kit-product-subtotal">S/ {{ getProductSubtotal(product) | number: '1.2-2' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+            <mat-card-footer class="kit-footer">
+
+              <div class="kit-footer-total">
+                <span>{{ 'inventory.kitProductTotal' | translate }}:</span>
+                <span class="kit-price">S/ {{ getKitTotalPrice(kit) | number: '1.2-2' }}</span>
+              </div>
+            </mat-card-footer>
+          </mat-card>
+        </div>
+
+        <div class="content" *ngIf="!store.loading() && !store.error() && store.kits().length === 0">
+          <div class="empty-state">
+            <i class="material-icons">inventory_2</i>
+            <h2>{{ 'inventory.noKits' | translate }}</h2>
+            <p>{{ 'inventory.startKits' | translate }} + Kit"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

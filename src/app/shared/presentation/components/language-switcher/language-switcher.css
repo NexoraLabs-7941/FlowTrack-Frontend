@@ -1,0 +1,36 @@
+.language-switcher {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 4px;
+  backdrop-filter: blur(10px);
+}
+
+.lang-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-width: 50px;
+  letter-spacing: 0.5px;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.lang-btn.active {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-primary);
+  font-weight: 700;
+}
+
+.lang-btn:active {
+  transform: scale(0.98);
+}

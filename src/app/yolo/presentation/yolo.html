@@ -1,0 +1,292 @@
+<div class="yolo-page">
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">YOLO</span>
+      <h1>Asistente visual de inventario</h1>
+      <p>Conteo de productos, validación manual y afluencia de clientes mediante cámaras.</p>
+    </div>
+    <button mat-flat-button color="primary" class="new-camera-btn" (click)="addCamera()">
+      <mat-icon>add</mat-icon>
+      Nueva Cámara
+    </button>
+  </div>
+
+  <div class="summary-grid">
+    <mat-card class="summary-card orange">
+      <span>Aforo Actual</span>
+      <strong>{{ currentPeopleInside() }}</strong>
+      <small>/ 60 pax</small>
+      <div class="progress"><i [style.width.%]="capacityPercent()"></i></div>
+    </mat-card>
+
+    <mat-card class="summary-card green">
+      <span>Total Visitas Hoy</span>
+      <strong>{{ todayVisits() | number }}</strong>
+      <small>+12% vs ayer</small>
+      <mat-icon>trending_up</mat-icon>
+    </mat-card>
+
+    <mat-card class="summary-card red">
+      <span>Alerta de Capacidad</span>
+      <strong>{{ capacityStatus() }}</strong>
+      <small>Próximo pico estimado: 18:30</small>
+      <mat-icon>warning_amber</mat-icon>
+    </mat-card>
+  </div>
+
+  <div class="content-grid">
+    <section class="left-column">
+      <mat-card class="camera-card">
+        <div class="card-title dark">
+          <span>CÁMARAS CONECTADAS</span>
+          <b>{{ onlineCameras() }} ACTIVAS</b>
+        </div>
+
+        <table mat-table [dataSource]="cameras()" class="camera-table">
+          <ng-container matColumnDef="device">
+            <th mat-header-cell *matHeaderCellDef>DISPOSITIVO</th>
+            <td mat-cell *matCellDef="let camera">
+              <div class="device-cell">
+                <span class="device-icon" [class.offline]="camera.status === 'Offline'"><mat-icon>videocam</mat-icon></span>
+                <div>
+                  <strong>{{ camera.name }}</strong>
+                  <small>{{ getCameraStreamLabel(camera) }} · {{ camera.fps }} fps</small>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>ESTADO</th>
+            <td mat-cell *matCellDef="let camera">
+              <span class="status" [class.online]="camera.status === 'Online'" [class.offline]="camera.status === 'Offline'">
+                {{ camera.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="location">
+            <th mat-header-cell *matHeaderCellDef>UBICACIÓN</th>
+            <td mat-cell *matCellDef="let camera">{{ camera.location }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>ACCIONES</th>
+            <td mat-cell *matCellDef="let camera">
+              <div class="camera-actions">
+                <button mat-stroked-button class="mini-action" type="button" (click)="activateCameraFromTable(camera, $event)">Activar</button>
+                <button mat-stroked-button class="mini-action off-btn" type="button"
+                        [disabled]="!canTurnOffCamera(camera) || deactivatingCamera()"
+                        (click)="deactivateCamera(camera, $event)">Apagar</button>
+                <button mat-icon-button class="icon-action delete-btn" type="button"
+                        aria-label="Eliminar cámara"
+                        (click)="deleteCamera(camera, $event)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="cameraColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: cameraColumns;" [class.selected-row]="row.id === selectedCameraId" (click)="activateCameraFromTable(row)"></tr>
+        </table>
+
+        <div class="local-camera-section">
+          @if (showNewCameraForm()) {
+            <h3>Agregar nueva camara</h3>
+            <div class="new-camera-form">
+              @if (browserCameras().length) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Camara disponible</mat-label>
+                  <mat-select [(ngModel)]="newCameraDeviceId">
+                    @for (device of browserCameras(); track device.deviceId) {
+                      <mat-option [value]="device.deviceId">
+                        {{ getDeviceLabel(device) }} - ID camara {{ resolveAforoCameraId(device.label || getDeviceLabel(device)) ?? 'N/D' }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              } @else {
+                <div class="camera-status">{{ localCameraError || 'No se detectaron camaras disponibles.' }}</div>
+                <button mat-stroked-button type="button" class="retry-camera-btn" (click)="refreshBrowserCameras()">
+                  <mat-icon>refresh</mat-icon>
+                  Buscar camaras
+                </button>
+              }
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput [(ngModel)]="newCameraName" placeholder="Ej. Entrada principal">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Ubicacion</mat-label>
+                <input matInput [(ngModel)]="newCameraLocation" placeholder="Ej. Laptop / Camara local">
+              </mat-form-field>
+              <div class="form-actions">
+                <button mat-stroked-button type="button" (click)="refreshBrowserCameras()">
+                  <mat-icon>refresh</mat-icon>
+                  Actualizar
+                </button>
+                <button mat-flat-button color="primary" type="button" (click)="saveNewCamera()" [disabled]="!browserCameras().length">Vincular camara</button>
+                <button mat-stroked-button type="button" (click)="cancelNewCamera()">Cancelar</button>
+              </div>
+            </div>
+          } @else {
+            <h3>Cámaras del sistema (laptop / Iriun)</h3>
+            @if (browserCameras().length) {
+              <mat-form-field appearance="outline" class="camera-picker">
+                <mat-label>Cámara para vista previa</mat-label>
+                <input matInput [value]="getDeviceLabel(browserCameras()[0])" readonly style="display:none">
+                <mat-select [(ngModel)]="selectedBrowserCameraId">
+                  @for (device of browserCameras(); track device.deviceId) {
+                    <mat-option [value]="device.deviceId">{{ getDeviceLabel(device) }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <div class="local-camera-actions">
+                <button mat-stroked-button type="button" (click)="refreshBrowserCameras()">
+                  <mat-icon>refresh</mat-icon>
+                  Actualizar
+                </button>
+                <button mat-flat-button color="primary" type="button" (click)="previewSelectedBrowserCamera()">
+                  <mat-icon>play_arrow</mat-icon>
+                  Ver en pantalla
+                </button>
+              </div>
+            } @else {
+              <div class="camera-status">{{ localCameraError || 'No se detectaron cámaras. Permite el acceso a la cámara y conecta Iriun.' }}</div>
+              <button mat-stroked-button type="button" class="retry-camera-btn" (click)="refreshBrowserCameras()">Reintentar detección</button>
+            }
+            @if (localCameraError && browserCameras().length) {
+              <div class="camera-status">{{ localCameraError }}</div>
+            }
+          }
+        </div>
+      </mat-card>
+    </section>
+
+    <section class="right-column">
+      <mat-card class="video-card">
+        <div class="video-header">
+          <span class="live-dot" [class.live-on]="isVideoPlaying()"></span>
+          <strong>{{ selectedCamera()?.name || 'Sin cámara seleccionada' }}</strong>
+          @if (browserCameras().length > 1) {
+            <mat-form-field appearance="outline" class="video-camera-select">
+              <mat-select [(ngModel)]="selectedBrowserCameraId" (selectionChange)="previewSelectedBrowserCamera()">
+                @for (device of browserCameras(); track device.deviceId) {
+                  <mat-option [value]="device.deviceId">{{ getDeviceLabel(device) }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+          @if (isVideoPlaying() || canTurnOffCamera(selectedCamera())) {
+            <button mat-stroked-button class="video-off-btn" type="button"
+                    [disabled]="deactivatingCamera()"
+                    (click)="deactivateActiveCamera()">
+              <mat-icon>videocam_off</mat-icon>
+              Apagar
+            </button>
+          }
+        </div>
+        <div class="video-frame">
+          @if (isVideoPlaying() || activatingCamera()) {
+            <!-- 
+            =============================================================
+            SISTEMA ANTIGUO (HLS): Descomentar para usar el Edge antiguo
+            =============================================================
+            -->
+            <video #webcamVideo autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"
+                   [style.display]="activeHlsUrl() ? 'block' : 'none'"></video>
+
+            <!-- SISTEMA NUEVO (MJPEG): Eliminar o comentar si usas el antiguo -->
+            <!-- <img *ngIf="mjpegStreamUrl()" [src]="mjpegStreamUrl()" style="width: 100%; height: 100%; object-fit: cover;" alt="Stream YOLO"> -->
+            
+            @if (activatingCamera()) {
+              <div class="stream-loading">Conectando con Edge Vision...</div>
+            }
+          } @else if (imagePreview) {
+            <img [src]="imagePreview" alt="Imagen analizada por YOLO">
+          } @else {
+            <div class="fake-scene">
+              <div class="shelf shelf-one"></div>
+              <div class="shelf shelf-two"></div>
+              <div class="person person-left"></div>
+              <div class="person person-right"></div>
+            </div>
+          }
+
+          @if (lastAudit) {
+            @for (detection of lastAudit.detections; track detection.id) {
+              <div class="box product-box"
+                   [style.left.%]="detection.box.left"
+                   [style.top.%]="detection.box.top"
+                   [style.width.%]="detection.box.width"
+                   [style.height.%]="detection.box.height">
+                <span>{{ detection.productName }} · {{ detection.quantity }}</span>
+              </div>
+            }
+          } @else {
+            <div class="no-audit-overlay">
+              <p>Aún no se han realizado auditorías visuales.</p>
+            </div>
+          }
+
+          <div class="video-tools"><mat-icon>zoom_in</mat-icon><mat-icon>fullscreen</mat-icon><mat-icon>linked_camera</mat-icon></div>
+        </div>
+      </mat-card>
+
+      <mat-card class="people-card">
+        <h2>Conteo de personas</h2>
+        <div class="people-controls">
+          <button mat-mini-fab color="primary" type="button" disabled><mat-icon>groups</mat-icon></button>
+          <div><strong>{{ currentPeopleInside() }}</strong><span>Personas detectadas</span></div>
+          <button mat-stroked-button type="button" (click)="refreshSelectedAfluencia()">
+            <mat-icon>refresh</mat-icon>
+            Actualizar
+          </button>
+          <button mat-flat-button color="primary" (click)="registerPeopleCounter()">Guardar conteo</button>
+        </div>
+      </mat-card>
+
+      <mat-card class="history-card">
+        <div class="history-header">
+          <h2>Historial YOLO</h2>
+          <div>
+            <button mat-button (click)="exportYoloReport()" [disabled]="!audits().length">Exportar auditorías</button>
+            <button mat-button (click)="exportPeopleReport()" [disabled]="!peopleCounters().length">Exportar afluencia</button>
+          </div>
+        </div>
+
+        @if (audits().length) {
+          <h3 class="history-subtitle">Auditorías de Inventario</h3>
+          <table mat-table [dataSource]="audits()" class="history-table">
+            <ng-container matColumnDef="createdAt"><th mat-header-cell *matHeaderCellDef>Fecha</th><td mat-cell *matCellDef="let audit">{{ audit.createdAt | date:'short' }}</td></ng-container>
+            <ng-container matColumnDef="camera"><th mat-header-cell *matHeaderCellDef>Cámara</th><td mat-cell *matCellDef="let audit">{{ getCameraName(audit.cameraId) }}</td></ng-container>
+            <ng-container matColumnDef="detections"><th mat-header-cell *matHeaderCellDef>Detecciones</th><td mat-cell *matCellDef="let audit">{{ getDetectionSummary(audit) }}</td></ng-container>
+            <ng-container matColumnDef="status"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let audit"><mat-chip>{{ audit.status }}</mat-chip></td></ng-container>
+            <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let audit"><button mat-button [disabled]="audit.status === 'Validado'" (click)="validateAudit(audit)">Validar</button></td></ng-container>
+            <tr mat-header-row *matHeaderRowDef="auditColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: auditColumns;"></tr>
+          </table>
+        }
+        
+        @if (peopleCounters().length) {
+          <h3 class="history-subtitle" [style.marginTop.px]="audits().length ? 30 : 0">Registros de Afluencia</h3>
+          <table mat-table [dataSource]="peopleCounters()" class="history-table">
+            <ng-container matColumnDef="date"><th mat-header-cell *matHeaderCellDef>Fecha y Hora</th><td mat-cell *matCellDef="let p">{{ p.date }} {{ p.hour }}</td></ng-container>
+            <ng-container matColumnDef="camera"><th mat-header-cell *matHeaderCellDef>Cámara</th><td mat-cell *matCellDef="let p">{{ getCameraName(p.cameraId) }}</td></ng-container>
+            <ng-container matColumnDef="entries"><th mat-header-cell *matHeaderCellDef>Entradas</th><td mat-cell *matCellDef="let p">{{ p.entries }}</td></ng-container>
+            <ng-container matColumnDef="exits"><th mat-header-cell *matHeaderCellDef>Salidas</th><td mat-cell *matCellDef="let p">{{ p.exits }}</td></ng-container>
+            <ng-container matColumnDef="currentInside"><th mat-header-cell *matHeaderCellDef>Aforo Guardado</th><td mat-cell *matCellDef="let p">{{ p.currentInside }}</td></ng-container>
+            
+            <tr mat-header-row *matHeaderRowDef="['date', 'camera', 'entries', 'exits', 'currentInside']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['date', 'camera', 'entries', 'exits', 'currentInside'];"></tr>
+          </table>
+        }
+
+        @if (!audits().length && !peopleCounters().length) {
+          <div class="empty-history"><mat-icon>videocam_off</mat-icon><p>Aún no hay auditorías visuales ni conteos guardados.</p></div>
+        }
+      </mat-card>
+    </section>
+  </div>
+</div>

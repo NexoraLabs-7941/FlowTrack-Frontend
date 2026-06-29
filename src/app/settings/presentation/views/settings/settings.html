@@ -1,0 +1,65 @@
+<section class="settings-container" aria-label="{{ t('settings.title') }}">
+  <div class="page-header">
+    <h1 class="page-title">
+      <mat-icon aria-hidden="true">settings</mat-icon>
+      {{ t('settings.title') }}
+    </h1>
+    <p class="page-subtitle">{{ t('settings.subtitle') }}</p>
+  </div>
+
+  <div class="settings-content">
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon aria-hidden="true">person</mat-icon>
+          {{ t('settings.userInfo.title') }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-item">
+          <span class="info-label">{{ t('settings.userInfo.email') }}</span>
+          <span class="info-value">{{ currentUser()?.email }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ t('settings.userInfo.role') }}</span>
+          <span class="info-value">{{ currentUser()?.isAdmin() ? t('settings.userInfo.admin') : t('settings.userInfo.user') }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon aria-hidden="true">language</mat-icon>
+          {{ t('settings.language.title') }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="section-description">{{ t('settings.language.description') }}</p>
+        <div class="language-section">
+          <app-language-switcher></app-language-switcher>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon aria-hidden="true">info</mat-icon>
+          {{ t('settings.appInfo.title') }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-item">
+          <span class="info-label">{{ t('settings.appInfo.version') }}</span>
+          <span class="info-value">1.0.0</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ t('settings.appInfo.name') }}</span>
+          <span class="info-value">FlowTrack</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</section>
+

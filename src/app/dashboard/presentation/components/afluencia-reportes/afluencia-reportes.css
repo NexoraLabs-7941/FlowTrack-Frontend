@@ -1,0 +1,124 @@
+.afluencia-panel {
+  margin-bottom: 1.5rem;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel-eyebrow {
+  display: block;
+  color: #2563EB;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.panel-heading h2 {
+  color: #1F2937;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0.125rem 0 0;
+}
+
+.refresh-action {
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  color: #1F2937;
+  cursor: pointer;
+  display: inline-flex;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.refresh-action:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.analytics-alert {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  color: #B91C1C;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.analytics-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.analytics-card {
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
+  overflow: hidden;
+}
+
+.analytics-card mat-card-content {
+  padding: 1rem !important;
+}
+
+.card-heading {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card-heading span {
+  color: #6B7280;
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.125rem;
+}
+
+.card-heading h3 {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.card-heading mat-icon {
+  color: #2563EB;
+}
+
+.chart-shell {
+  height: 280px;
+  min-width: 100%;
+  position: relative;
+}
+
+@media (max-width: 1200px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .panel-heading {
+    align-items: flex-start;
+  }
+
+  .panel-heading h2 {
+    font-size: 1rem;
+  }
+
+  .chart-shell {
+    height: 240px;
+  }
+}

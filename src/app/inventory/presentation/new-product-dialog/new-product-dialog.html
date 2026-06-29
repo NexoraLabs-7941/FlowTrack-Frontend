@@ -1,0 +1,41 @@
+<h3 class="dlg-title">{{ 'inventory.newProduct' | translate }}</h3>
+
+<div class="form-grid">
+  <label>{{ 'inventory.name' | translate }}</label>
+  <input [(ngModel)]="form.name" placeholder="Leche Gloria"/>
+
+  <label>{{ 'inventory.description' | translate }}</label>
+  <textarea [(ngModel)]="form.description" rows="3" [placeholder]="'inventory.productDescriptionPlaceholder' | translate"></textarea>
+
+  <label>{{ 'inventory.category' | translate }}</label>
+  <select [(ngModel)]="form.categoryId">
+    <option [ngValue]="''" disabled>{{ 'inventory.select' | translate }}</option>
+    <option *ngFor="let c of store.categories()" [ngValue]="c.id">{{ c.name }}</option>
+  </select>
+
+  <label>{{ 'inventory.provider' | translate }}</label>
+  <select [(ngModel)]="form.providerId">
+    <option [ngValue]="''" disabled>{{ 'inventory.select' | translate }}</option>
+    <option *ngFor="let p of store.providers()" [ngValue]="p.id">{{ p.firstName }} {{ p.lastName }}</option>
+  </select>
+
+  <label>{{ 'inventory.minimumStock' | translate }}</label>
+  <input type="number" min="0" [(ngModel)]="form.minStock"/>
+
+  <label>{{ 'inventory.unitPrice' | translate }}</label>
+  <div class="price">
+    <span>s/</span>
+    <input type="number" step="0.01" [(ngModel)]="form.unitPrice"/>
+  </div>
+
+  <label>{{ 'inventory.isActive' | translate }}</label>
+  <div class="checkbox-container">
+    <input type="checkbox" id="isActive" [(ngModel)]="form.isActive"/>
+    <label for="isActive" class="checkbox-label">{{ 'inventory.activeProduct' | translate }}</label>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn ghost" (click)="cancel()">{{ 'global.cancel' | translate }}</button>
+  <button class="btn primary" [disabled]="!isValid" (click)="save()">{{ 'global.save' | translate }}</button>
+</div>

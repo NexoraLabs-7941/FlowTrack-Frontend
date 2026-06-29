@@ -1,0 +1,470 @@
+{
+  "global": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "exit": "Exit"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage application preferences and options",
+    "userInfo": {
+      "title": "User Information",
+      "email": "Email",
+      "role": "Role",
+      "admin": "Administrator",
+      "user": "User"
+    },
+    "language": {
+      "title": "Language",
+      "description": "Select the interface language"
+    },
+    "appInfo": {
+      "title": "Application Information",
+      "version": "Version",
+      "name": "Name"
+    }
+  },
+  "sidebar": {
+    "title": "FlowTrack",
+    "menu": {
+      "home": "Home",
+      "inventory": "Inventory",
+      "providers": "Providers",
+      "sales": "Sales",
+      "reports": "Reports",
+      "more": "More",
+      "aria": {
+        "home": "Go to home",
+        "inventory": "Go to inventory",
+        "providers": "Go to providers",
+        "sales": "Go to sales",
+        "reports": "Go to reports",
+        "more": "Open more options menu",
+        "language": "Language selector",
+        "navigation": "Main navigation",
+        "yolo": "Go to YOLO module"
+      },
+      "yolo": "YOLO"
+    },
+    "footer": {
+      "settings": "Settings",
+      "personal": "Personal administration",
+      "logout": "Logout",
+      "aria": {
+        "settings": "Go to settings",
+        "personal": "Go to personal administration",
+        "logout": "Logout"
+      }
+    }
+  },
+  "home": {
+    "title": "Welcome to FlowTrack",
+    "subtitle": "Inventory management system"
+  },
+  "inventory": {
+    "title": "Inventory Management",
+    "subtitle": "Manage your products and stock",
+    "emptyState": {
+      "title": "Inventory",
+      "description": "This is the inventory screen",
+      "message": "Soon you will be able to manage all your products here"
+    },
+    "header": "Inventory",
+    "products": "Products",
+    "name": "Name",
+    "unitPrice": "Unit price",
+    "currentStock": "Current stock",
+    "minimumStock": "Minimum stock",
+    "informationProduct": "Information",
+    "actions": "Actions",
+    "viewDetail": "View detail",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete the product {name}?",
+    "noProductsFound": "No products found",
+    "tryDifferentSearch": "Try different search criteria or filters",
+    "filter": "Filter",
+    "search": "Search",
+    "allCategories": "All categories",
+    "allProviders": "All providers",
+    "allLots": "All lots",
+    "allStatuses": "All statuses",
+    "date": "Date",
+    "clearFilters": "Clear filters",
+    "removeFilter": "Remove filter",
+    "loadingKits": "Loading kits...",
+    "loadingProducts": "Loading products...",
+    "retry": "Retry",
+    "product": "Product",
+    "newReplacement": "Enter replacement",
+    "noKits": "There are no kits",
+    "startKits": "Start by creating your first kit by clicking the button",
+    "newKit": "New kit",
+    "priceKit": "Kit Price",
+    "quantity": "Quantity to select",
+    "category": "Category",
+    "provider": "Provider",
+    "select": "Select",
+    "newProduct": "New product",
+    "lot": "Lot",
+    "receiptDate": "Receipt date",
+    "expirationDate": "Expiration date",
+    "amountEntering": "Amount entering",
+    "lastReception": "Last reception",
+    "lowStock": "Low stock",
+    "status": "Status",
+    "outOfStock": "Out of Stock",
+    "normalStock": "Normal",
+    "kits": "Kits",
+    "price": "Price",
+    "kitProductUnitPrice": "Unit price",
+    "kitProductTotal": "Total"
+  },
+  "providers-view": {
+    "providers": "Providers",
+    "providers-table": {
+      "name": "Name",
+      "contact": "Contact",
+      "phone": "Cellphone",
+      "email": "Email",
+      "ruc": "RUC",
+      "address": "Address",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "providers-toolbar": {
+      "search": "Search",
+      "filter": "Filter",
+      "add-provider": "Add Provider"
+    },
+    "form-dialog": {
+      "add": "Add Provider",
+      "edit": "Edit Provider",
+      "title": "Add/Edit Provider",
+      "first-name": "First Name",
+      "last-name": "Last Name",
+      "phone-number": "Cellphone",
+      "email": "Email",
+      "ruc": "RUC",
+      "cancel": "Cancel",
+      "save": "Save",
+      "first-name-required": "First name is required",
+      "first-name-minlength": "First name must be at least 2 characters",
+      "last-name-required": "Last name is required",
+      "last-name-minlength": "Last name must be at least 2 characters",
+      "phone-number-required": "Phone number is required",
+      "phone-number-invalid": "Invalid phone number format",
+      "email-required": "Email is required",
+      "email-invalid": "Invalid email format",
+      "ruc-required": "RUC is required",
+      "ruc-invalid": "RUC must have exactly 11 digits"
+    }
+  },
+  "sales": {
+    "title": "Sales Management",
+    "subtitle": "Manage your sales and transactions",
+    "filter": "Filter",
+    "emptyState": {
+      "title": "Sales",
+      "description": "This is the sales screen",
+      "message": "You will soon be able to manage all your sales here"
+    },
+    "products": "Products",
+    "salesDraft": "Product Outflow Draft",
+    "table": {
+      "name": "Name",
+      "unitPrice": "Unit Price",
+      "stock": "Stock",
+      "quantity": "Quantity",
+      "totalPrice": "Total Price",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "kits": "Kits",
+    "noKitsAvailable": "No kits available",
+    "total": "Total",
+    "kit": "Kit",
+    "emptyCart": "The draft is empty. Add products or kits to get started."
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "email": "Email",
+      "password": "Password",
+      "forgotPassword": "Forgot your password?",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create one"
+    },
+    "register": {
+      "title": "Sign up",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "submit": "Sign up",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in"
+    },
+    "tagline": "An inventory control designed to help you sell more and stress less",
+    "errors": {
+      "loginFailed": "Login failed. Please check your credentials.",
+      "registerFailed": "Registration failed. Please try again.",
+      "passwordMismatch": "Passwords do not match"
+    },
+    "validation": {
+      "required": "is required",
+      "emailInvalid": "Invalid email",
+      "minLength": "Minimum {{min}} characters",
+      "passwordRequired": "is required",
+      "confirmRequired": "Confirmation is required",
+      "passwordMismatch": "Passwords do not match"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "greeting": "Good morning",
+    "notifications": {
+      "title": "Notifications",
+      "button": "Open notifications",
+      "icon": "notifications",
+      "empty": "No notifications",
+      "types": {
+        "warning": "Warning",
+        "alert": "Alert",
+        "info": "Info"
+      }
+    },
+    "stats": {
+      "productsInInventory": "Products in inventory",
+      "monthlyIncome": "Monthly income",
+      "salesThisMonth": "Sales made this month",
+      "productsWithAlerts": "Products with alerts"
+    },
+    "charts": {
+      "topProducts": "Top selling products",
+      "monthlyIncome": "Monthly income"
+    },
+    "notificationMessages": {
+      "expiringProduct": "The product \"{{product}}\" is about to expire on {{date}}",
+      "lowStock": "The product \"{{product}}\" only has {{quantity}} units in stock"
+    },
+    "notificationTitles": {
+      "expiringProduct": "Product about to expire",
+      "lowStock": "Product running out"
+    }
+  },
+  "personal": {
+    "title": "Staff Administration"
+  },
+  "personalAdministration": {
+    "title": "Staff Administration",
+    "subtitle": "Manage your business users",
+    "search": "Search...",
+    "filter": "Filter",
+    "status": "Status",
+    "role": "Role",
+    "all": "All",
+    "active": "Active",
+    "inactive": "Inactive",
+    "apply": "Apply",
+    "clear": "Clear",
+    "clearFilters": "Clear filters",
+    "newRole": "New Role",
+    "newUser": "New User",
+    "addUser": "Add user",
+    "name": "Name",
+    "account": "Account",
+    "actions": "Actions",
+    "newUserTitle": "New Staff",
+    "nameLabel": "First Name",
+    "lastnameLabel": "Last Name",
+    "phoneLabel": "Phone Number",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "roleLabel": "Role",
+    "editUserTitle": "Edit User",
+    "fullNameLabel": "Full Name",
+    "accountLabel": "Account (email)",
+    "statusLabel": "Status",
+    "confirmDeleteTitle": "Confirm Deletion",
+    "confirmDeleteMessage": "Are you sure you want to delete {{name}}?",
+    "newRoleTitle": "New Role",
+    "roleNameLabel": "Role Name",
+    "rolePlaceholder": "Ex: Supervisor",
+    "permissionsTitle": "Permissions",
+    "permissionsHint": "Select the modules this user will have access to",
+    "permissionsSelected": "{{count}} permission(s) selected",
+    "permissionDashboard": "Dashboard",
+    "permissionInventory": "Inventory",
+    "permissionSales": "Sales",
+    "permissionProviders": "Providers",
+    "permissionReports": "Reports",
+    "permissionUserManagement": "User Management",
+    "permissionProducts": "Product Management",
+    "permissionPurchases": "Purchase Process",
+    "permissionStats": "Statistics",
+    "permissionUsers": "User Management",
+    "loadingUsers": "Loading users...",
+    "noUsers": "No users",
+    "noUsersFiltered": "No users found with the applied filters",
+    "noUsersYet": "You haven't added any users to your business yet",
+    "admin": "Administrator",
+    "admins": "Admins",
+    "users": "Users",
+    "cannotDeleteSelf": "You cannot delete yourself",
+    "cannotDeleteOwner": "Cannot delete the primary user",
+    "deleteUser": "Delete user",
+    "emailPlaceholder": "user@example.com",
+    "passwordPlaceholder": "Minimum 6 characters",
+    "passwordPlaceholderOptional": "Leave empty to keep current",
+    "passwordHintOptional": "Leave empty if you don't want to change the password",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Enter a valid email",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Minimum 6 characters",
+    "editUser": "Edit user",
+    "user": "User",
+    "aria": {
+      "search": "Search users",
+      "filterRole": "Filter by role",
+      "createUser": "Create new user",
+      "deleteUser": "Delete user",
+      "clearFilters": "Clear applied filters"
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "delete": "Delete",
+    "loading": "Loading..."
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "message": "Oops! The page you're looking for doesn't exist.",
+    "description": "The URL might be misspelled or the page may have been moved. Please check the address or return to the main page.",
+    "goHome": "Go Home",
+    "goBack": "Go Back"
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "View and analyze important information from your inventory",
+    "refresh": "Refresh",
+    "export": "Export to Excel",
+    "loading": "Loading reports...",
+    "retry": "Retry",
+    "expired": "Expired",
+    "expiresToday": "Expires today",
+    "expiresTomorrow": "Expires tomorrow",
+    "daysLeft": "{days} days left",
+    "dayLeft": "{days} day left",
+    "monthLeft": "{months} month left",
+    "monthsLeft": "{months} months left",
+    "tabs": {
+      "providers": "Providers",
+      "stock": "Current Stock",
+      "expiring": "Expiring",
+      "lowStock": "Low Stock",
+      "sales": "Sales"
+    },
+    "providers": {
+      "title": "Providers List",
+      "subtitle": "Complete information of all your providers",
+      "empty": "No registered providers",
+      "filterByCategory": "Filter by category",
+      "allCategories": "All categories",
+      "clearFilter": "Clear filter",
+      "columns": {
+        "name": "Name",
+        "ruc": "RUC",
+        "email": "Email",
+        "phone": "Phone",
+        "productCount": "Products",
+        "products": "Products"
+      }
+    },
+    "stock": {
+      "title": "Current Stock Report",
+      "subtitle": "Current inventory status of all products",
+      "empty": "No products in inventory",
+      "columns": {
+        "productName": "Product",
+        "category": "Category",
+        "currentStock": "Current Stock",
+        "minStock": "Minimum Stock",
+        "unitPrice": "Unit Price",
+        "totalValue": "Total Value",
+        "status": "Status"
+      },
+      "status": {
+        "normal": "Normal",
+        "low": "Low",
+        "critical": "Critical"
+      }
+    },
+    "expiring": {
+      "title": "Expiring Products",
+      "subtitle": "View products by expiration month",
+      "empty": "No products with expiration date",
+      "emptyFiltered": "No products expiring in the selected month",
+      "emptyNext30Days": "No products expiring in the next 30 days",
+      "filterByMonth": "Filter by month",
+      "next30Days": "Next 30 days",
+      "showAll": "Show all",
+      "clearFilter": "Clear filter",
+      "columns": {
+        "productName": "Product",
+        "category": "Category",
+        "expirationDate": "Expiration Date",
+        "daysLeft": "Days Left",
+        "currentStock": "Current Stock",
+        "lot": "Lot",
+        "status": "Status"
+      },
+      "status": {
+        "expired": "Expired",
+        "critical": "Critical",
+        "warning": "Warning",
+        "normal": "Normal"
+      }
+    },
+    "lowStock": {
+      "title": "Low Stock Products",
+      "subtitle": "Products that are below minimum stock",
+      "empty": "No products with low stock",
+      "columns": {
+        "productName": "Product",
+        "category": "Category",
+        "currentStock": "Current Stock",
+        "minStock": "Minimum Stock",
+        "difference": "Difference",
+        "unitPrice": "Unit Price",
+        "status": "Status"
+      },
+      "status": {
+        "critical": "Critical",
+        "low": "Low",
+        "normal": "Normal"
+      }
+    },
+    "sales": {
+      "title": "Sales Report",
+      "subtitle": "History of all sales made",
+      "empty": "No sales registered",
+      "columns": {
+        "id": "ID",
+        "date": "Date",
+        "totalAmount": "Total Amount",
+        "products": "Product Details"
+      }
+    }
+  },
+  "yolo": {
+    "title": "YOLO"
+  }
+}

@@ -1,0 +1,72 @@
+<nav class="mobile-nav" role="navigation" [attr.aria-label]="t('sidebar.menu.aria.navigation')">
+  <div class="nav-container">
+    @for (item of mainNavItems; track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        class="nav-item"
+        [attr.aria-label]="t(item.ariaLabelKey)"
+        #link="routerLinkActive"
+        [attr.aria-current]="link.isActive ? 'page' : null">
+        <mat-icon [attr.aria-hidden]="true">{{ item.icon }}</mat-icon>
+        <span class="nav-label">{{ t(item.titleKey) }}</span>
+      </a>
+    }
+
+    <button
+      class="nav-item more-btn"
+      [matMenuTriggerFor]="moreMenu"
+      [attr.aria-label]="t('sidebar.menu.aria.more')"
+      [attr.aria-haspopup]="true"
+      [attr.aria-expanded]="false">
+      <mat-icon [attr.aria-hidden]="true">more_horiz</mat-icon>
+      <span class="nav-label">{{ t('sidebar.menu.more') }}</span>
+    </button>
+
+    <mat-menu #moreMenu="matMenu" class="more-menu">
+      @for (item of additionalMenuItems; track item.route) {
+        <a
+          mat-menu-item
+          [routerLink]="item.route"
+          [attr.aria-label]="t(item.ariaLabelKey)">
+          <mat-icon [attr.aria-hidden]="true">{{ item.icon }}</mat-icon>
+          <span>{{ t(item.titleKey) }}</span>
+        </a>
+      }
+
+      <a
+        mat-menu-item
+        routerLink="/configuracion"
+        [attr.aria-label]="t('sidebar.footer.aria.settings')">
+        <mat-icon [attr.aria-hidden]="true">settings</mat-icon>
+        <span>{{ t('sidebar.footer.settings') }}</span>
+      </a>
+
+      <a
+        mat-menu-item
+        routerLink="/perfil"
+        [attr.aria-label]="t('sidebar.footer.aria.personal')">
+        <mat-icon [attr.aria-hidden]="true">person</mat-icon>
+        <span>{{ t('sidebar.footer.personal') }}</span>
+      </a>
+
+      <mat-divider></mat-divider>
+
+      <div class="language-menu-section" role="group" [attr.aria-label]="t('sidebar.menu.aria.language')">
+        <app-language-switcher></app-language-switcher>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <button
+        mat-menu-item
+        (click)="logout()"
+        class="logout-menu-item"
+        [attr.aria-label]="t('sidebar.footer.aria.logout')">
+        <mat-icon [attr.aria-hidden]="true">logout</mat-icon>
+        <span>{{ t('sidebar.footer.logout') }}</span>
+      </button>
+    </mat-menu>
+  </div>
+</nav>
+

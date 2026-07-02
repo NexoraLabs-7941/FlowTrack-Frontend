@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, effect } from '@angular/core';
+import { Component, inject, OnInit, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -28,7 +28,11 @@ import { ProductsApi } from '../../../../inventory/infrastructure/products-api';
 import { KitApi } from '../../../../inventory/infrastructure/kit-api';
 import { Product } from '../../../../inventory/domain/model/product.entity';
 import { Kit } from '../../../../inventory/domain/model/kit.entity';
-import { SaleResponse, SaleDetail } from '../../../../sales/infrastructure/sales-api-endpoint';
+import { SaleResponse } from '../../../../sales/infrastructure/sales-api-endpoint';
+import {
+  InventoryDetectionApi,
+  RestockDetectionRecord
+} from '../../../../inventory/infrastructure/inventory-detection-api';
 
 /**
  * Reports component displaying various reports.
@@ -66,6 +70,7 @@ export class ReportsComponent implements OnInit {
   private readonly kitsApi = inject(KitApi);
   private readonly http = inject(HttpClient);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly detectionApi = inject(InventoryDetectionApi);
 
   // Cache para nombres de productos y kits
   private productNameCache = new Map<number, string>();
@@ -78,6 +83,15 @@ export class ReportsComponent implements OnInit {
   protected expiringColumns: string[] = ['productName', 'category', 'expirationDate', 'daysLeft', 'currentStock', 'lot', 'status'];
   protected lowStockColumns: string[] = ['productName', 'category', 'currentStock', 'minStock', 'unitPrice', 'status'];
   protected salesColumns: string[] = ['id', 'date', 'totalAmount', 'products'];
+  protected yoloColumns: string[] = [
+    'createdAt', 'lote', 'product', 'detectedQuantity', 'verifiedQuantity',
+    'receptionDate', 'expirationDate', 'image'
+  ];
+
+  protected readonly yoloRecords = signal<RestockDetectionRecord[]>([]);
+  protected readonly yoloLoading = signal(false);
+  protected readonly yoloError = signal<string | null>(null);
+  protected readonly selectedImageUrl = signal<string | null>(null);
 
   // Month filter for expiring products
   protected selectedMonth: string | null = null;
@@ -151,16 +165,78 @@ export class ReportsComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.loadReportsData();
-    // Initialize filtered products with all products initially
+    this.loadYoloRecords();
     this.updateFilteredExpiringProducts();
     this.updateFilteredProvidersReport();
 
-    // Pre-cargar nombres cuando las ventas estén disponibles
     effect(() => {
       if (this.store.hasSalesReport()) {
         this.preloadProductAndKitNames();
       }
     });
+  }
+
+  protected loadYoloRecords(): void {
+    this.yoloLoading.set(true);
+    this.yoloError.set(null);
+
+    this.detectionApi.getRestockRecords().subscribe({
+      next: (records) => {
+        this.yoloRecords.set(records);
+        this.preloadYoloProductNames(records);
+        this.yoloLoading.set(false);
+      },
+      error: (err) => {
+        this.yoloError.set(
+          err?.error?.message ?? err?.message ?? this.t('reports.yoloRecords.loadError')
+        );
+        this.yoloLoading.set(false);
+      }
+    });
+  }
+
+  private preloadYoloProductNames(records: RestockDetectionRecord[]): void {
+    const productIds = new Set(records.map(r => r.productId));
+    const productRequests = Array.from(productIds)
+      .filter(id => !this.productNameCache.has(id) && !this.loadingNames.has(id))
+      .map(id => {
+        this.loadingNames.add(id);
+        return this.productsApi.getProductById(id).pipe(
+          map((product: Product) => ({ id, name: product.name })),
+          catchError(() => of({ id, name: `Producto #${id}` }))
+        );
+      });
+
+    if (productRequests.length > 0) {
+      forkJoin(productRequests).subscribe(results => {
+        results.forEach(({ id, name }) => {
+          this.productNameCache.set(id, name);
+          this.loadingNames.delete(id);
+        });
+      });
+    }
+  }
+
+  protected openImagePreview(imageUrl: string): void {
+    this.selectedImageUrl.set(imageUrl);
+  }
+
+  protected closeImagePreview(): void {
+    this.selectedImageUrl.set(null);
+  }
+
+  protected formatDateOnly(dateString: string): string {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString;
+      return date.toLocaleDateString('es-PE', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    } catch {
+      return dateString;
+    }
   }
 
   /**
@@ -382,6 +458,7 @@ export class ReportsComponent implements OnInit {
    */
   protected refreshReports(): void {
     this.store.refresh();
+    this.loadYoloRecords();
   }
 
   /**

@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { InventoryStore } from '../../application/inventory.store';
 import { YoloDetection } from '../../domain/model/YoloDetection';
-import { Batch } from '../../domain/model/batch.entity';
 import { Product } from '../../domain/model/product.entity';
 import { InventoryDetectionApi } from '../../infrastructure/inventory-detection-api';
 
@@ -46,6 +45,8 @@ export class RestockingYoloPageComponent implements OnInit, OnDestroy {
   yoloDetections: YoloDetection[] = [];
 
   detecting = false;
+  saving = false;
+  saveError: string | null = null;
   detectionError: string | null = null;
   cameraActive = false;
   cameraError: string | null = null;
@@ -198,7 +199,9 @@ export class RestockingYoloPageComponent implements OnInit, OnDestroy {
   }
 
   get canSave(): boolean {
-    return this.isValidDate(this.fechaRecepcion)
+    return !!this.yoloImageFile
+      && !!this.lote.trim()
+      && this.isValidDate(this.fechaRecepcion)
       && this.isValidDate(this.fechaVencimiento)
       && this.yoloDetections.some(d => d.validatedQuantity > 0);
   }
@@ -209,18 +212,54 @@ export class RestockingYoloPageComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
-    if (!this.canSave) return;
-    for (const d of this.yoloDetections.filter(d => d.validatedQuantity > 0)) {
-      const batch = new Batch({
-        id: '',
-        productId: d.productId,
-        quantity: d.validatedQuantity,
-        expirationDate: this.fechaVencimiento!.toISOString(),
-        receptionDate: this.fechaRecepcion!.toISOString()
+    if (!this.canSave || !this.yoloImageFile) return;
+
+    const detectionsToSave = this.yoloDetections.filter(d => d.validatedQuantity > 0);
+    if (!detectionsToSave.length) return;
+
+    this.saving = true;
+    this.saveError = null;
+
+    const saveNext = (index: number) => {
+      if (index >= detectionsToSave.length) {
+        this.saving = false;
+        this.store.refresh();
+        this.router.navigate(['/inventario']);
+        return;
+      }
+
+      const detection = detectionsToSave[index];
+      this.detectionApi.saveRestockRecord({
+        image: this.yoloImageFile!,
+        lote: this.lote.trim(),
+        receptionDate: this.fechaRecepcionStr,
+        expirationDate: this.fechaVencimientoStr,
+        productId: detection.productId,
+        detectedQuantity: detection.detectedQuantity,
+        verifiedQuantity: detection.validatedQuantity,
+        filename: this.yoloImageFile instanceof File ? this.yoloImageFile.name : 'capture.jpg'
+      }).subscribe({
+        next: () => saveNext(index + 1),
+        error: err => {
+          this.saving = false;
+          this.saveError = this.formatSaveError(err);
+        }
       });
-      this.store.addBatch(batch);
+    };
+
+    saveNext(0);
+  }
+
+  private formatSaveError(error: unknown): string {
+    if (error && typeof error === 'object') {
+      const err = error as { error?: { message?: string }; message?: string; status?: number };
+      if (err.error?.message) return err.error.message;
+      if (err.message) return err.message;
+      if (err.status === 0) {
+        return 'No se pudo conectar con el backend para guardar el registro.';
+      }
     }
-    this.router.navigate(['/inventario']);
+    return 'No se pudo guardar el ingreso con la foto.';
   }
 
   private waitForVideoElement(): Promise<HTMLVideoElement> {

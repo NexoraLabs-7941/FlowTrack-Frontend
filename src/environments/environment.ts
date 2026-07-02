@@ -17,6 +17,8 @@ export const environment = {
   afluenciaTraficoDiarioEndpointPath: '/analitica/trafico-diario',
   afluenciaHorasPicoEndpointPath: '/analitica/horas-pico',
   restockDetectionEndpointPath: '/inventario/deteccion',
+  restockDetectionRecordsSavePath: '/inventario/deteccion/registro',
+  restockDetectionRecordsListPath: '/inventario/deteccion/registros',
   platformProviderProductsEndpointPath: '/products',
   platformProviderProvidersEndpointPath: '/providers',
   platformProviderBatchesEndpointPath: '/batches',

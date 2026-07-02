@@ -5,8 +5,8 @@ const LOCAL_API = 'http://localhost:8081/api/v1';
 const DEPLOYED_API = 'https://flowtrack-gateway.onrender.com/api/v1';
 
 /** URL activa del API — cambia la asignación para alternar entre local y deployado */
-// const API_BASE_URL = LOCAL_API;
-const API_BASE_URL = DEPLOYED_API;
+ const API_BASE_URL = LOCAL_API;
+//const API_BASE_URL = DEPLOYED_API;
 
 export const environment = {
   production: false,
@@ -17,6 +17,8 @@ export const environment = {
   afluenciaTraficoDiarioEndpointPath: '/analitica/trafico-diario',
   afluenciaHorasPicoEndpointPath: '/analitica/horas-pico',
   restockDetectionEndpointPath: '/inventario/deteccion',
+  restockDetectionRecordsSavePath: '/inventario/deteccion/registro',
+  restockDetectionRecordsListPath: '/inventario/deteccion/registros',
   platformProviderProvidersEndpointPath: '/providers',
   platformProviderProductsEndpointPath: '/products',
   platformProviderKitsEndpointPath: '/kits',

@@ -187,7 +187,7 @@
             </button>
           }
         </div>
-        <div class="video-frame">
+        <div #videoFrame class="video-frame">
           @if (isVideoPlaying() || activatingCamera()) {
             <!-- 
             =============================================================
@@ -224,13 +224,19 @@
                 <span>{{ detection.productName }} · {{ detection.quantity }}</span>
               </div>
             }
-          } @else {
+          } @else if (!isVideoPlaying() && !activatingCamera()) {
             <div class="no-audit-overlay">
               <p>Aún no se han realizado auditorías visuales.</p>
             </div>
           }
 
-          <div class="video-tools"><mat-icon>zoom_in</mat-icon><mat-icon>fullscreen</mat-icon><mat-icon>linked_camera</mat-icon></div>
+          <button
+            type="button"
+            class="fullscreen-btn"
+            [attr.aria-label]="isFullscreen() ? 'Salir de pantalla completa' : 'Pantalla completa'"
+            (click)="toggleVideoFullscreen()">
+            <mat-icon>{{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+          </button>
         </div>
       </mat-card>
 

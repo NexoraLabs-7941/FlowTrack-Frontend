@@ -86,6 +86,7 @@
 
       <p class="camera-error" *ngIf="cameraError">{{ cameraError }}</p>
       <p class="detection-error" *ngIf="detectionError">{{ detectionError }}</p>
+      <p class="detection-error" *ngIf="saveError">{{ saveError }}</p>
     </div>
 
     <div class="yolo-table-panel">
@@ -143,15 +144,17 @@
 
       <div class="table-actions">
         <button class="btn-cancel" (click)="goBack()">Volver</button>
-        <button class="btn-save" [disabled]="!canSave || loading || detecting" (click)="onSave()">Guardar</button>
+        <button class="btn-save" [disabled]="!canSave || loading || detecting || saving" (click)="onSave()">
+          {{ saving ? 'Guardando...' : 'Guardar' }}
+        </button>
       </div>
     </div>
 
   </div>
 
-  <div *ngIf="loading || detecting" class="loading-overlay">
+  <div *ngIf="loading || detecting || saving" class="loading-overlay">
     <mat-spinner diameter="40"></mat-spinner>
-    <p>{{ detecting ? 'Detectando objetos con YOLO...' : 'Guardando...' }}</p>
+    <p>{{ detecting ? 'Detectando objetos con YOLO...' : saving ? 'Subiendo foto y guardando ingreso...' : 'Guardando...' }}</p>
   </div>
 
 </div>

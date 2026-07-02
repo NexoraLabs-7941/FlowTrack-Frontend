@@ -376,7 +376,8 @@
       "stock": "Stock Actual",
       "expiring": "Por Vencer",
       "lowStock": "Stock Bajo",
-      "sales": "Ventas"
+      "sales": "Ventas",
+      "yoloRecords": "Detecciones YOLO"
     },
     "providers": {
       "title": "Listado de Proveedores",
@@ -466,6 +467,26 @@
         "date": "Fecha",
         "totalAmount": "Monto Total",
         "products": "Detalles de Productos"
+      }
+    },
+    "yoloRecords": {
+      "title": "Registros de Detección YOLO",
+      "subtitle": "Historial de reposiciones registradas con detección automática",
+      "empty": "No hay registros de detección YOLO",
+      "loading": "Cargando registros YOLO...",
+      "loadError": "Error al cargar los registros de detección YOLO",
+      "viewImage": "Ver imagen completa",
+      "closeImage": "Cerrar imagen",
+      "imageAlt": "Imagen de reposición YOLO",
+      "columns": {
+        "createdAt": "Fecha de registro",
+        "lote": "Lote",
+        "product": "Producto",
+        "detectedQuantity": "Cant. detectada",
+        "verifiedQuantity": "Cant. verificada",
+        "receptionDate": "Fecha recepción",
+        "expirationDate": "Fecha vencimiento",
+        "image": "Imagen"
       }
     }
   },

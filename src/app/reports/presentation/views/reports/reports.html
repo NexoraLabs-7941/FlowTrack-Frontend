@@ -519,7 +519,127 @@
           </mat-card>
         </div>
       </mat-tab>
+
+      <mat-tab [label]="t('reports.tabs.yoloRecords')">
+        <div class="tab-content">
+          <mat-card class="report-card">
+            <mat-card-header>
+              <div class="card-header-content">
+                <div>
+                  <mat-card-title>
+                    {{ t('reports.yoloRecords.title') }}
+                  </mat-card-title>
+                  <mat-card-subtitle>{{ t('reports.yoloRecords.subtitle') }}</mat-card-subtitle>
+                </div>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              @if (yoloLoading()) {
+                <div class="loading-container">
+                  <mat-spinner diameter="40"></mat-spinner>
+                  <p>{{ t('reports.yoloRecords.loading') }}</p>
+                </div>
+              } @else if (yoloError()) {
+                <div class="error-container">
+                  <mat-icon class="error-icon">error_outline</mat-icon>
+                  <p>{{ yoloError() }}</p>
+                  <button mat-raised-button color="primary" (click)="loadYoloRecords()">
+                    {{ t('reports.retry') }}
+                  </button>
+                </div>
+              } @else if (yoloRecords().length > 0) {
+                <table mat-table [dataSource]="yoloRecords()" class="reports-table">
+                  <ng-container matColumnDef="createdAt">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.yoloRecords.columns.createdAt') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ formatDate(record.createdAt) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="lote">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.yoloRecords.columns.lote') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ record.lote }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="product">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.yoloRecords.columns.product') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ getProductName(record.productId) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="detectedQuantity">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.yoloRecords.columns.detectedQuantity') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ record.detectedQuantity }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="verifiedQuantity">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.yoloRecords.columns.verifiedQuantity') }}</th>
+                    <td mat-cell *matCellDef="let record">
+                      <span [class.quantity-mismatch]="record.detectedQuantity !== record.verifiedQuantity">
+                        {{ record.verifiedQuantity }}
+                      </span>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="receptionDate">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.yoloRecords.columns.receptionDate') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ formatDateOnly(record.receptionDate) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="expirationDate">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.yoloRecords.columns.expirationDate') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ formatDateOnly(record.expirationDate) }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="image">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.yoloRecords.columns.image') }}</th>
+                    <td mat-cell *matCellDef="let record">
+                      @if (record.imageUrl) {
+                        <button
+                          type="button"
+                          class="yolo-image-thumb-btn"
+                          (click)="openImagePreview(record.imageUrl)"
+                          [matTooltip]="t('reports.yoloRecords.viewImage')">
+                          <img
+                            [src]="record.imageUrl"
+                            [alt]="t('reports.yoloRecords.imageAlt')"
+                            class="yolo-image-thumb"
+                            loading="lazy" />
+                        </button>
+                      } @else {
+                        <span class="no-products">-</span>
+                      }
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="yoloColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: yoloColumns;"></tr>
+                </table>
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>photo_camera</mat-icon>
+                  <p>{{ t('reports.yoloRecords.empty') }}</p>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
     </mat-tab-group>
+  }
+
+  @if (selectedImageUrl()) {
+    <div class="image-lightbox" (click)="closeImagePreview()" role="dialog" aria-modal="true">
+      <button
+        type="button"
+        class="lightbox-close"
+        (click)="closeImagePreview(); $event.stopPropagation()"
+        [attr.aria-label]="t('reports.yoloRecords.closeImage')">
+        <mat-icon>close</mat-icon>
+      </button>
+      <img
+        [src]="selectedImageUrl()!"
+        [alt]="t('reports.yoloRecords.imageAlt')"
+        class="lightbox-image"
+        (click)="$event.stopPropagation()" />
+    </div>
   }
 </div>
 

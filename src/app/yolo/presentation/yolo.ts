@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, ChangeDetectorRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnInit, ChangeDetectorRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,6 +44,9 @@ import Hls from 'hls.js';
   styleUrl: './yolo.css'
 })
 export class YoloComponent implements OnInit {
+  @ViewChild('videoFrame') private videoFrameRef?: ElementRef<HTMLElement>;
+  @ViewChild('webcamVideo') private webcamVideoRef?: ElementRef<HTMLVideoElement>;
+
   private readonly yoloService = inject(YoloService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
@@ -80,6 +83,7 @@ export class YoloComponent implements OnInit {
   protected deactivatingCamera = signal(false);
   protected localCameraError = '';
   protected isVideoPlaying = computed(() => !!this.activeHlsUrl() || !!this.mjpegStreamUrl());
+  protected isFullscreen = signal(false);
   private hlsPlayer: any = null;
   private refreshInterval: any = null;
 
@@ -109,7 +113,24 @@ export class YoloComponent implements OnInit {
     this.loadData();
     const onDevicesChanged = () => void this.refreshBrowserCameras();
     navigator.mediaDevices?.addEventListener('devicechange', onDevicesChanged);
+    const onFullscreenChange = () => this.isFullscreen.set(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFullscreenChange);
     this.destroyRef.onDestroy(() => navigator.mediaDevices?.removeEventListener('devicechange', onDevicesChanged));
+    this.destroyRef.onDestroy(() => document.removeEventListener('fullscreenchange', onFullscreenChange));
+  }
+
+  protected toggleVideoFullscreen(): void {
+    const frame = this.videoFrameRef?.nativeElement;
+    if (!frame) return;
+
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+      return;
+    }
+
+    void frame.requestFullscreen().catch(() => {
+      this.showMessage('No se pudo activar pantalla completa.');
+    });
   }
 
   protected loadData(): void {
@@ -752,6 +773,7 @@ throw lastError ?? new Error('Error al cargar el stream HLS');
 private async playHlsStream(url: string): Promise < void> {
   this.stopHlsPlayback();
   this.activeHlsUrl.set(url);
+  this.cdr.detectChanges();
   const video = await this.waitForVideoElement();
 
   video.muted = true;
@@ -788,9 +810,13 @@ throw new Error('HLS not supported in this browser.');
 private waitForVideoElement(): Promise < HTMLVideoElement > {
   return new Promise(resolve => {
     const check = () => {
-      const el = document.querySelector('video');
-      if (el) resolve(el as HTMLVideoElement);
-      else requestAnimationFrame(check);
+      const el = this.webcamVideoRef?.nativeElement;
+      if (el) {
+        resolve(el);
+        return;
+      }
+      this.cdr.detectChanges();
+      requestAnimationFrame(check);
     };
     check();
   });

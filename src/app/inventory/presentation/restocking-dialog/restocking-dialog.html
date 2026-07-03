@@ -1,11 +1,7 @@
 <div class="dialog-container">
-
-  <div class="dialog-accent"></div>
-
   <div class="dialog-header">
     <div class="header-text">
-      <h2>Ingresar reposición</h2>
-      <p>Registra el ingreso de productos al inventario</p>
+      <h2 class="dlg-title">Ingresar reposición</h2>
     </div>
     <button class="btn-yolo" type="button" (click)="openYoloView()">
       <mat-icon>center_focus_strong</mat-icon>
@@ -61,9 +57,13 @@
           <td class="center">{{ getCurrentStock(row.productId) }}</td>
           <td class="center">
             <div class="qty-control">
-              <button class="qty-btn" type="button" (click)="decrement(row)">−</button>
+              <button class="qty-btn" type="button" (click)="decrement(row)" aria-label="Disminuir cantidad">
+                <mat-icon>remove</mat-icon>
+              </button>
               <span class="qty-value">{{ row.quantity }}</span>
-              <button class="qty-btn" type="button" (click)="increment(row)">+</button>
+              <button class="qty-btn" type="button" (click)="increment(row)" aria-label="Aumentar cantidad">
+                <mat-icon>add</mat-icon>
+              </button>
             </div>
           </td>
           <td class="center total-value">{{ getRowTotal(row) }}</td>
@@ -98,11 +98,11 @@
   </div>
 
   <div class="dialog-actions">
-    <button class="btn-cancel" type="button" (click)="onCancel()">Cancelar</button>
-    <button class="btn-save" type="button" [disabled]="!canSave || loading" (click)="onSave()">
-      <mat-icon>save</mat-icon>
+    <button class="btn ghost" type="button" (click)="onCancel()">Cancelar</button>
+    <button class="btn primary" type="button" [disabled]="!canSave || loading" (click)="onSave()">
       Guardar
     </button>
   </div>
 
 </div>
+

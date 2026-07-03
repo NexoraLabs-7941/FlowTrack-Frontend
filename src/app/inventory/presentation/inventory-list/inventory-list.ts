@@ -279,8 +279,8 @@ export class InventoryListComponent {
 
   openRestockingDialog(): void {
     const dialogRef = this.dialog.open(RestockingDialogComponent, {
-      width: '750px',
-      maxWidth: '90vw',
+      width: '840px',
+      maxWidth: '95vw',
       panelClass: 'restocking-dialog',
       disableClose: false
     });

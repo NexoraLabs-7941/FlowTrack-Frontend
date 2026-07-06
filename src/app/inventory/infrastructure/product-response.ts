@@ -6,6 +6,7 @@ export interface ProductResource extends BaseResource {
   description: string;
   categoryId: string;
   providerId: string;
+  barcode?: string | null;
   minStock: number;
   unitPrice: number;
   isActive: boolean;

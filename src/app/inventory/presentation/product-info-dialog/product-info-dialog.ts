@@ -9,6 +9,7 @@ export interface ProductInfoData {
   currentStock: number;
   minStock: number;
   unitPrice: number;
+  barcode?: string;
   lastReception?: string;   // 'YYYY-MM-DD'
   lot?: string;
   provider?: string;

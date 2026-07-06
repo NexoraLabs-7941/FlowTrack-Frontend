@@ -520,6 +520,108 @@
         </div>
       </mat-tab>
 
+      <mat-tab [label]="t('reports.tabs.afluencia')">
+        <div class="tab-content">
+          <mat-card class="report-card">
+            <mat-card-header>
+              <div class="card-header-content">
+                <div>
+                  <mat-card-title>
+                    {{ t('reports.afluencia.title') }}
+                  </mat-card-title>
+                  <mat-card-subtitle>{{ t('reports.afluencia.subtitle') }}</mat-card-subtitle>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="exportAfluenciaCsv()"
+                    [disabled]="afluenciaRecords().length === 0"
+                    [matTooltip]="t('reports.export')">
+                    <mat-icon>download</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="filter-section">
+                <mat-form-field appearance="outline" class="month-filter">
+                  <mat-label>{{ t('reports.afluencia.filters.fechaInicio') }}</mat-label>
+                  <input matInput type="date" [(ngModel)]="afluenciaFechaInicio" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="month-filter">
+                  <mat-label>{{ t('reports.afluencia.filters.fechaFin') }}</mat-label>
+                  <input matInput type="date" [(ngModel)]="afluenciaFechaFin" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="month-filter">
+                  <mat-label>{{ t('reports.afluencia.filters.camaraId') }}</mat-label>
+                  <mat-select [(ngModel)]="afluenciaCamaraId">
+                    <mat-option value="">{{ t('reports.afluencia.filters.todasCamaras') }}</mat-option>
+                    @for (camera of afluenciaCameras(); track camera) {
+                      <mat-option [value]="camera">{{ camera }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" (click)="loadAfluenciaRecords()">
+                  {{ t('reports.afluencia.applyFilters') }}
+                </button>
+                <button mat-stroked-button (click)="clearAfluenciaFilters()">
+                  {{ t('reports.afluencia.clearFilters') }}
+                </button>
+              </div>
+
+              @if (afluenciaLoading()) {
+                <div class="loading-container">
+                  <mat-spinner diameter="40"></mat-spinner>
+                  <p>{{ t('reports.afluencia.loading') }}</p>
+                </div>
+              } @else if (afluenciaError()) {
+                <div class="error-container">
+                  <mat-icon class="error-icon">error_outline</mat-icon>
+                  <p>{{ afluenciaError() }}</p>
+                  <button mat-raised-button color="primary" (click)="loadAfluenciaRecords()">
+                    {{ t('reports.retry') }}
+                  </button>
+                </div>
+              } @else if (afluenciaRecords().length > 0) {
+                <table mat-table [dataSource]="afluenciaRecords()" class="reports-table">
+                  <ng-container matColumnDef="fecha">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.afluencia.columns.fecha') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ record.diaSemana }} - {{ record.fecha }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="rangoHora">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.afluencia.columns.rangoHora') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ record.rangoHora }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="camaraId">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.afluencia.columns.camaraId') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ record.camaraId }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="totalIngresos">
+                    <th mat-header-cell *matHeaderCellDef>{{ t('reports.afluencia.columns.totalIngresos') }}</th>
+                    <td mat-cell *matCellDef="let record">{{ record.totalIngresos }}</td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="afluenciaColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: afluenciaColumns;"></tr>
+                </table>
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>groups</mat-icon>
+                  <p>{{ t('reports.afluencia.empty') }}</p>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
       <mat-tab [label]="t('reports.tabs.yoloRecords')">
         <div class="tab-content">
           <mat-card class="report-card">

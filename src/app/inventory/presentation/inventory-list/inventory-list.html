@@ -82,6 +82,7 @@
               <thead>
               <tr>
                 <th>{{ 'inventory.name' | translate }}</th>
+                <th>{{ 'inventory.barcode' | translate }}</th>
                 <th>{{ 'inventory.unitPrice' | translate }}</th>
                 <th>{{ 'inventory.currentStock' | translate }}</th>
                 <th>{{ 'inventory.minimumStock' | translate }}</th>
@@ -92,7 +93,7 @@
               <tbody>
               @if (productsRow.length === 0) {
                 <tr>
-                  <td colspan="6" class="no-results-cell">
+                  <td colspan="7" class="no-results-cell">
                     <div class="no-results-message">
                       <mat-icon>search_off</mat-icon>
                       <p>{{ 'inventory.noProductsFound' | translate }}</p>
@@ -111,6 +112,7 @@
                         <span>{{ p.name }}</span>
                       </div>
                     </td>
+                    <td>{{ p.barcode || '-' }}</td>
                     <td>S/. {{ p.unitPrice | number:'1.2-2' }}</td>
                     <td>
                       <span class="stock-quantity">

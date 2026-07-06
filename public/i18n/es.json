@@ -125,7 +125,8 @@
     "kits": "Kits",
     "price": "Precio",
     "kitProductUnitPrice": "Precio unitario",
-    "kitProductTotal": "Total"
+    "kitProductTotal": "Total",
+    "barcode": "Código de barras"
   },
   "providers-view": {
     "providers": "Proveedores",
@@ -377,6 +378,7 @@
       "expiring": "Por Vencer",
       "lowStock": "Stock Bajo",
       "sales": "Ventas",
+      "afluencia": "Afluencia",
       "yoloRecords": "Detecciones YOLO"
     },
     "providers": {
@@ -467,6 +469,27 @@
         "date": "Fecha",
         "totalAmount": "Monto Total",
         "products": "Detalles de Productos"
+      }
+    },
+    "afluencia": {
+      "title": "Historial de afluencia",
+      "subtitle": "Ingresos agrupados por día, hora y cámara",
+      "empty": "No hay registros de afluencia para los filtros seleccionados",
+      "loading": "Cargando historial de afluencia...",
+      "applyFilters": "Aplicar filtros",
+      "clearFilters": "Limpiar filtros",
+      "filters": {
+        "fechaInicio": "Fecha inicio",
+        "fechaFin": "Fecha fin",
+        "camaraId": "Cámara",
+        "todasCamaras": "Todas las cámaras",
+        "todos": "Todos"
+      },
+      "columns": {
+        "fecha": "Día",
+        "rangoHora": "Hora",
+        "camaraId": "Cámara",
+        "totalIngresos": "Ingresos"
       }
     },
     "yoloRecords": {

@@ -7,6 +7,9 @@
   <label>{{ 'inventory.description' | translate }}</label>
   <textarea [(ngModel)]="form.description" rows="3" [placeholder]="'inventory.productDescriptionPlaceholder' | translate"></textarea>
 
+  <label>{{ 'inventory.barcode' | translate }}</label>
+  <input [(ngModel)]="form.barcode" inputmode="numeric" placeholder="7751234567890"/>
+
   <label>{{ 'inventory.category' | translate }}</label>
   <select [(ngModel)]="form.categoryId">
     <option [ngValue]="''" disabled>{{ 'inventory.select' | translate }}</option>

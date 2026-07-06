@@ -23,6 +23,7 @@ export class NewProductDialogComponent {
     description: '',
     categoryId: '',
     providerId: '',
+    barcode: '',
     minStock: 0,
     unitPrice: '' as string | number,
     isActive: true
@@ -51,6 +52,7 @@ export class NewProductDialogComponent {
       description: this.form.description.trim(),
       categoryId: this.form.categoryId,
       providerId: String(this.form.providerId),
+      barcode: this.form.barcode.trim(),
       minStock: Number(this.form.minStock),
       unitPrice,
       isActive: this.form.isActive

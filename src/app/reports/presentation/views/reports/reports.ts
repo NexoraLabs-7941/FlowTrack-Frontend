@@ -11,6 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
@@ -33,6 +34,10 @@ import {
   InventoryDetectionApi,
   RestockDetectionRecord
 } from '../../../../inventory/infrastructure/inventory-detection-api';
+import {
+  AfluenciaAnaliticaService,
+  AfluenciaHistorialRecord
+} from '../../../../dashboard/infrastructure/afluencia-analitica.service';
 
 /**
  * Reports component displaying various reports.
@@ -54,6 +59,7 @@ import {
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatFormFieldModule,
+    MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
     MatSnackBarModule,
@@ -71,6 +77,7 @@ export class ReportsComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly snackBar = inject(MatSnackBar);
   private readonly detectionApi = inject(InventoryDetectionApi);
+  private readonly afluenciaAnaliticaService = inject(AfluenciaAnaliticaService);
 
   // Cache para nombres de productos y kits
   private productNameCache = new Map<number, string>();
@@ -87,11 +94,20 @@ export class ReportsComponent implements OnInit {
     'createdAt', 'lote', 'product', 'detectedQuantity', 'verifiedQuantity',
     'receptionDate', 'expirationDate', 'image'
   ];
+  protected afluenciaColumns: string[] = ['fecha', 'rangoHora', 'camaraId', 'totalIngresos'];
 
   protected readonly yoloRecords = signal<RestockDetectionRecord[]>([]);
   protected readonly yoloLoading = signal(false);
   protected readonly yoloError = signal<string | null>(null);
   protected readonly selectedImageUrl = signal<string | null>(null);
+  protected readonly afluenciaRecords = signal<AfluenciaHistorialRecord[]>([]);
+  protected readonly afluenciaCameras = signal<string[]>([]);
+  protected readonly afluenciaLoading = signal(false);
+  protected readonly afluenciaError = signal<string | null>(null);
+
+  protected afluenciaCamaraId = '';
+  protected afluenciaFechaInicio = '';
+  protected afluenciaFechaFin = '';
 
   // Month filter for expiring products
   protected selectedMonth: string | null = null;
@@ -166,6 +182,8 @@ export class ReportsComponent implements OnInit {
   ngOnInit(): void {
     this.store.loadReportsData();
     this.loadYoloRecords();
+    this.loadAfluenciaCameras();
+    this.loadAfluenciaRecords();
     this.updateFilteredExpiringProducts();
     this.updateFilteredProvidersReport();
 
@@ -193,6 +211,47 @@ export class ReportsComponent implements OnInit {
         this.yoloLoading.set(false);
       }
     });
+  }
+
+  protected loadAfluenciaCameras(): void {
+    this.afluenciaAnaliticaService.getCamarasDisponibles().subscribe({
+      next: cameras => this.mergeAfluenciaCameras(cameras),
+      error: () => this.mergeAfluenciaCameras(this.afluenciaRecords().map(record => record.camaraId))
+    });
+  }
+
+  protected loadAfluenciaRecords(): void {
+    this.afluenciaLoading.set(true);
+    this.afluenciaError.set(null);
+
+    this.afluenciaAnaliticaService.getHistorial({
+      camaraId: this.afluenciaCamaraId,
+      fechaInicio: this.afluenciaFechaInicio,
+      fechaFin: this.afluenciaFechaFin
+    }).subscribe({
+      next: (records) => {
+        this.afluenciaRecords.set(records);
+        this.mergeAfluenciaCameras(records.map(record => record.camaraId));
+        this.afluenciaLoading.set(false);
+      },
+      error: (err) => {
+        this.afluenciaError.set(err?.error?.message ?? err?.message ?? 'Error al cargar el historial de afluencia');
+        this.afluenciaLoading.set(false);
+      }
+    });
+  }
+
+  protected clearAfluenciaFilters(): void {
+    this.afluenciaCamaraId = '';
+    this.afluenciaFechaInicio = '';
+    this.afluenciaFechaFin = '';
+    this.loadAfluenciaRecords();
+  }
+
+  protected exportAfluenciaCsv(): void {
+    const csv = this.buildAfluenciaCsv(this.afluenciaRecords());
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' });
+    this.downloadBlob(blob, 'reporte-afluencia.csv');
   }
 
   private preloadYoloProductNames(records: RestockDetectionRecord[]): void {
@@ -459,6 +518,7 @@ export class ReportsComponent implements OnInit {
   protected refreshReports(): void {
     this.store.refresh();
     this.loadYoloRecords();
+    this.loadAfluenciaRecords();
   }
 
   /**
@@ -705,6 +765,46 @@ export class ReportsComponent implements OnInit {
       ];
     });
     this.exportToGoogleSheets('Ventas', ['ID Venta', 'Fecha', 'Monto Total', 'Productos'], rows);
+  }
+
+  private downloadBlob(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  private buildAfluenciaCsv(records: AfluenciaHistorialRecord[]): string {
+    const headers = ['Día', 'Fecha', 'Hora', 'Cámara', 'Ingresos'];
+    const rows = records.map(record => [
+      record.diaSemana,
+      record.fecha,
+      record.rangoHora,
+      record.camaraId,
+      String(record.totalIngresos)
+    ]);
+
+    return [headers, ...rows]
+      .map(row => row.map(value => this.escapeCsvValue(value)).join(','))
+      .join('\n');
+  }
+
+  private escapeCsvValue(value: string): string {
+    const escaped = value.replace(/"/g, '""');
+    return /[",\n\r]/.test(escaped) ? `"${escaped}"` : escaped;
+  }
+
+  private mergeAfluenciaCameras(cameras: string[]): void {
+    const cameraSet = new Set([
+      ...this.afluenciaCameras(),
+      ...cameras.map(camera => camera?.trim()).filter((camera): camera is string => !!camera)
+    ]);
+    this.afluenciaCameras.set(Array.from(cameraSet).sort());
   }
 
 }

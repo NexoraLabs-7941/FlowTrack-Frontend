@@ -19,6 +19,7 @@ export class Product implements BaseEntity {
     description: string;
     categoryId: string;
     providerId: string;
+    barcode?: string;
     minStock: number;
     unitPrice: number;
     isActive: boolean;
@@ -28,6 +29,7 @@ export class Product implements BaseEntity {
     this._description = product.description;
     this._categoryId = product.categoryId;
     this._providerId = product.providerId;
+    this._barcode = product.barcode ?? '';
     this._minStock = product.minStock;
     this._unitPrice = product.unitPrice;
     this._isActive = product.isActive;
@@ -80,6 +82,14 @@ export class Product implements BaseEntity {
   }
   set providerId(value: string) {
     this._providerId = value;
+  }
+
+  private _barcode: string;
+  get barcode(): string {
+    return this._barcode;
+  }
+  set barcode(value: string) {
+    this._barcode = value;
   }
 
   private _minStock: number;

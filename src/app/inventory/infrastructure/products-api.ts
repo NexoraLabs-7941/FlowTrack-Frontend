@@ -21,6 +21,10 @@ export class ProductsApi extends BaseApi {
     return this.productsEndpoint.getById(id);
   }
 
+  getProductByBarcode(barcode: string) {
+    return this.productsEndpoint.getByBarcode(barcode);
+  }
+
   createProduct(product: Product) {
     return this.productsEndpoint.create(product);
   }

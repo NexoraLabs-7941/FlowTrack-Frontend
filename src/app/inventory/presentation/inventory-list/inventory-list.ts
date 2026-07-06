@@ -32,6 +32,7 @@ type ProductRow = {
   categoryId?: string;
   providerName?: string;
   providerId?: string;
+  barcode?: string;
   lastReception?: string;  // ISO 'YYYY-MM-DD'
   lot?: string;
   expirationDate?: string;
@@ -151,6 +152,7 @@ export class InventoryListComponent {
       categoryName: categoryMap.get(p.categoryId) ?? '-',
       categoryId: p.categoryId,
       providerId: p.providerId,
+      barcode: p.barcode,
       providerName: this.getProviderName(p.providerId),
       lot: latestBatchByProduct.get(p.id)?.lot ?? '-',
       lastReception: latestBatchByProduct.get(p.id)?.receptionDate ?? undefined,
@@ -162,7 +164,8 @@ export class InventoryListComponent {
     const search = this.searchTerm().toLowerCase().trim();
     if (search) {
       filtered = filtered.filter(p =>
-        p.name.toLowerCase().includes(search)
+        p.name.toLowerCase().includes(search) ||
+        (p.barcode ?? '').toLowerCase().includes(search)
       );
     }
 
@@ -321,6 +324,7 @@ export class InventoryListComponent {
       currentStock: p.currentStock,
       minStock: p.minStock,
       unitPrice: p.unitPrice,
+      barcode: p.barcode,
       lastReception: p.lastReception,
       lot: p.lot,
       provider: p.providerName,

@@ -118,7 +118,8 @@
     "kits": "Kits",
     "price": "Price",
     "kitProductUnitPrice": "Unit price",
-    "kitProductTotal": "Total"
+    "kitProductTotal": "Total",
+    "barcode": "Barcode"
   },
   "providers-view": {
     "providers": "Providers",
@@ -371,6 +372,7 @@
       "expiring": "Expiring",
       "lowStock": "Low Stock",
       "sales": "Sales",
+      "afluencia": "Foot Traffic",
       "yoloRecords": "YOLO Detections"
     },
     "providers": {
@@ -462,6 +464,27 @@
         "date": "Date",
         "totalAmount": "Total Amount",
         "products": "Product Details"
+      }
+    },
+    "afluencia": {
+      "title": "Foot traffic history",
+      "subtitle": "Entries grouped by day, hour, and camera",
+      "empty": "No foot traffic records for the selected filters",
+      "loading": "Loading foot traffic history...",
+      "applyFilters": "Apply filters",
+      "clearFilters": "Clear filters",
+      "filters": {
+        "fechaInicio": "Start date",
+        "fechaFin": "End date",
+        "camaraId": "Camera",
+        "todasCamaras": "All cameras",
+        "todos": "All"
+      },
+      "columns": {
+        "fecha": "Day",
+        "rangoHora": "Hour",
+        "camaraId": "Camera",
+        "totalIngresos": "Entries"
       }
     },
     "yoloRecords": {

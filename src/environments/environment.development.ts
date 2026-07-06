@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  platformProviderApiBaseUrl: 'https://flowtrack-gateway.onrender.com/api/v1',
+  platformProviderApiBaseUrl: 'https://flowtrack-loadbalancer.onrender.com/api/v1',
   platformProviderProvidersEndpointPath: '/providers',
   platformProviderProductsEndpointPath: '/products',
   platformProviderKitsEndpointPath: '/kits',
